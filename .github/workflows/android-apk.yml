@@ -27,6 +27,9 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Check Java version
+        run: java -version
+
       - name: Build debug APK
         run: |
           cd android
