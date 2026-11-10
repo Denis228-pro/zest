@@ -1,0 +1,55 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="bcard" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#3A3A40"/>
+      <stop offset="0.12" stop-color="#101013"/>
+      <stop offset="0.5" stop-color="#0A0A0C"/>
+      <stop offset="0.88" stop-color="#101013"/>
+      <stop offset="1" stop-color="#3A3A40"/>
+    </linearGradient></defs>
+  <rect width="1200" height="1200" fill="#FFFFFF"/>
+  <circle cx="320" cy="680" r="330" fill="#F3E8D2"/>
+  <circle cx="1128" cy="84" r="56" stroke="#FF6A00" stroke-width="10" fill="none"/>
+  <rect x="36" y="54" width="46" height="46" stroke="#FF6A00" stroke-width="8" fill="none"/>
+  <circle cx="44" cy="950" r="30" stroke="#1A2B5E" stroke-width="8" fill="none"/>
+  <rect x="36" y="1030" width="40" height="40" stroke="#1A2B5E" stroke-width="8" fill="none"/>
+  <path d="M1120 380 q24 28 -8 56 q-32 28 -6 56" stroke="#FF6A00" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <text x="600" y="120" text-anchor="middle" font-family="Unbounded" font-weight="900" font-size="96" fill="#1A2B5E">НАПИТОК</text>
+  <text x="600" y="198" text-anchor="middle" font-family="Unbounded" font-weight="800" font-size="62" fill="#FF6A00">Adrenaline RUSH</text>
+  <text x="600" y="252" text-anchor="middle" font-family="Golos Text" font-weight="700" font-size="42" fill="#1A2B5E">энергетический</text>
+  <ellipse cx="310" cy="1093.1999999999998" rx="150" ry="22" fill="#000000" opacity="0.12"/>
+  
+  <g>
+    <defs><linearGradient id="bcard" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#3A3A40"/>
+      <stop offset="0.12" stop-color="#101013"/>
+      <stop offset="0.5" stop-color="#0A0A0C"/>
+      <stop offset="0.88" stop-color="#101013"/>
+      <stop offset="1" stop-color="#3A3A40"/>
+    </linearGradient></defs>
+    <rect x="196" y="280" width="228" height="775.1999999999999" rx="22.8" fill="url(#bcard)" stroke="#FFFFFF" stroke-opacity="0" stroke-width="1.5"/>
+    
+  <ellipse cx="310" cy="280" rx="114" ry="17.099999999999998" fill="#E9E9EE"/>
+  <ellipse cx="310" cy="280" rx="86.64" ry="11.4" fill="#C7C7CF"/>
+  <rect x="284.92" y="273.616" width="50.160000000000004" height="12.768" rx="6.384" fill="#A6A6AF"/>
+    <text x="310" y="324.9616" text-anchor="middle" font-family="Golos Text" font-weight="700" font-size="14.82" letter-spacing="0.5" fill="#D9A93C">АБСОЛЮТНАЯ ЭНЕРГИЯ</text>
+    <text x="310" y="524.188" text-anchor="middle" font-family="Unbounded" font-weight="900" font-size="136.79999999999998" fill="#D9A93C">A</text>
+    <path d="M 237.04 549.7696 Q 310 573.0255999999999 378.4 531.94" stroke="#D9A93C" stroke-width="6.384" fill="none" stroke-linecap="round"/>
+    <g transform="translate(310 645.8943999999999) skewX(-8)">
+      <text x="0" y="0" text-anchor="middle" font-family="Unbounded" font-weight="700" font-size="35.339999999999996" fill="#FFFFFF">Adrenaline</text>
+    </g>
+    <text x="310" y="712.5616" text-anchor="middle" font-family="Unbounded" font-weight="800" font-size="45.6" letter-spacing="4" fill="#E7C25C">RUSH</text>
+    <text x="310" y="960.6256" text-anchor="middle" font-family="Golos Text" font-weight="600" font-size="17.099999999999998" letter-spacing="2" fill="#FFFFFF" fill-opacity="0.85">ВСЕ ТЫ МОЖЕШЬ</text>
+    <rect x="196" y="1020.3159999999999" width="228" height="34.88399999999999" fill="#C7C7CF"/>
+  </g>
+  <text x="520" y="366" font-family="Golos Text" font-weight="600" font-size="40" fill="#1A2B5E">Адреналин Раш —</text>
+  <text x="520" y="422" font-family="Golos Text" font-weight="600" font-size="40" fill="#1A2B5E">твой мгновенный</text>
+  <text x="520" y="478" font-family="Golos Text" font-weight="600" font-size="40" fill="#1A2B5E">заряд энергии!</text>
+  <text x="520" y="534" font-family="Golos Text" font-weight="600" font-size="40" fill="#1A2B5E">Прогони усталость,</text>
+  <text x="520" y="590" font-family="Golos Text" font-weight="600" font-size="40" fill="#1A2B5E">почувствуй мощный</text>
+  <text x="520" y="646" font-family="Golos Text" font-weight="600" font-size="40" fill="#1A2B5E">импульс и</text>
+  <text x="520" y="702" font-family="Golos Text" font-weight="600" font-size="40" fill="#1A2B5E">достигай большего.</text>
+  <text x="1160" y="1074" text-anchor="end" font-family="Unbounded" font-weight="800" font-size="92" fill="#FF6A00">0.449 л</text>
+  <rect x="1044" y="1108" width="124" height="62" rx="14" fill="#141414"/>
+  <text x="1106" y="1152" text-anchor="middle" font-family="Unbounded" font-weight="800" font-size="38" fill="#FFFFFF">18+</text>
+  <text x="48" y="1152" font-family="Golos Text" font-weight="700" font-size="30" fill="#1A2B5E">ZeSt · Нарьян-Мар · доставка 40–60 минут</text>
+</svg>

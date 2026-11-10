@@ -1,0 +1,92 @@
+<svg width="1196" height="600" viewBox="0 0 1196 600" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    
+    <radialGradient id="zg" cx="0.32" cy="0.28" r="0.95">
+      <stop offset="0" stop-color="#FFB13D"/>
+      <stop offset="0.55" stop-color="#FF7A00"/>
+      <stop offset="1" stop-color="#EF5300"/>
+    </radialGradient>
+    <radialGradient id="glowD" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FF6A00" stop-opacity="0.5"/>
+      <stop offset="0.7" stop-color="#FF6A00" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#FF6A00" stop-opacity="0"/>
+    </radialGradient>
+    
+    <g id="mark">
+      <circle cx="32" cy="32" r="30" fill="url(#zg)"/>
+      <g transform="translate(4 0) skewX(-12)">
+        <path d="M14 16 H50 L30 39 H50 V48 H14 L34 25 H14 Z" fill="#FFFFFF"/>
+        <path d="M35 16 H39 L31 25 H27 Z" fill="#E84E00"/>
+        <path d="M33 39 H37 L29 48 H25 Z" fill="#E84E00"/>
+      </g>
+    </g>
+  </defs>
+
+  <rect width="1196" height="600" fill="#0F0F13"/>
+  <ellipse cx="280" cy="600" rx="700" ry="400" fill="url(#glowD)"/>
+  <path d="M-80 470 C 320 360, 700 260, 1260 130" stroke="#FFC728" stroke-width="9" fill="none" stroke-linecap="round" opacity="0.4"/>
+
+  <g fill="#FFFFFF">
+    <path transform="translate(700 84)" d="M0 -12 L3.3 -3.3 L12 0 L3.3 3.3 L0 12 L-3.3 3.3 L-12 0 L-3.3 -3.3 Z" opacity="0.75"/>
+    <path transform="translate(1080 66)" d="M0 -14 L4 -4 L14 0 L4 4 L0 14 L-4 4 L-14 0 L-4 -4 Z" opacity="0.85"/>
+  </g>
+
+  <circle cx="1000" cy="310" r="150" stroke="#FF6A00" stroke-width="16" fill="none" opacity="0.8"/>
+  <circle cx="864" cy="176" r="26" stroke="#FFFFFF" stroke-width="7" fill="none" opacity="0.25"/>
+
+  <g stroke-linecap="round">
+    <path d="M700 260 H 826" stroke="#FF6A00" stroke-width="8" opacity="0.5"/>
+    <path d="M668 308 H 780" stroke="#FFFFFF" stroke-width="5" opacity="0.3"/>
+  </g>
+  <ellipse cx="1032" cy="382" rx="160" ry="15" fill="#000000" opacity="0.35"/>
+  <g transform="translate(880 172) scale(0.78) rotate(-4 190 120)">
+    
+  <g>
+    <ellipse cx="210" cy="240" rx="180" ry="15" fill="#000000" opacity="0.35"/>
+    <rect x="26" y="62" width="112" height="82" rx="16" fill="#FFFFFF"/>
+    <rect x="26" y="62" width="112" height="20" rx="10" fill="#FF6A00"/>
+    <g transform="translate(66 88) scale(0.5)">
+      <path d="M14 16 H50 L30 39 H50 V48 H14 L34 25 H14 Z" fill="#E84E00"/>
+    </g>
+    <path d="M310 166 L344 96" stroke="#FF7A1A" stroke-width="16" stroke-linecap="round"/>
+    <rect x="298" y="158" width="50" height="28" rx="13" fill="#FF6A00"/>
+    <path d="M322 90 H366" stroke="#141419" stroke-width="10" stroke-linecap="round"/>
+    <circle cx="366" cy="100" r="9" fill="#FFC728"/>
+    <rect x="70" y="152" width="270" height="30" rx="15" fill="#FF6A00"/>
+    <rect x="150" y="124" width="80" height="32" rx="15" fill="#141419"/>
+    <circle cx="120" cy="192" r="38" fill="#141419"/>
+    <circle cx="120" cy="192" r="14" fill="#C7C7CF"/>
+    <circle cx="120" cy="192" r="5" fill="#E9E9EE"/>
+    <circle cx="322" cy="192" r="38" fill="#141419"/>
+    <circle cx="322" cy="192" r="14" fill="#C7C7CF"/>
+    <circle cx="322" cy="192" r="5" fill="#E9E9EE"/>
+  </g>
+  </g>
+
+  <use xlink:href="#mark" href="#mark" transform="translate(64 80) scale(2.2)"/>
+  <text x="228" y="178" font-family="Unbounded" font-weight="900" font-size="72" letter-spacing="1" fill="#FFFFFF">ДОСТАВКА</text>
+  <text x="232" y="228" font-family="Golos Text" font-weight="800" font-size="24" letter-spacing="4" fill="#FF8F3E">40–60 МИНУТ ПО ГОРОДУ</text>
+
+  <rect x="64" y="280" width="220" height="54" rx="27" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
+  <g transform="translate(84 294) scale(1.08)" fill="none" stroke="#FF8F3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>
+  </g>
+  <text x="120" y="316" font-family="Golos Text" font-weight="600" font-size="24" fill="#FFFFFF">0 ₽ от 700 ₽</text>
+
+  <rect x="304" y="280" width="170" height="54" rx="27" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
+  <g transform="translate(324 294) scale(1.08)" fill="none" stroke="#FF8F3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="5" width="20" height="14" rx="3"/>
+    <path d="M2 10h20"/>
+  </g>
+  <text x="360" y="316" font-family="Golos Text" font-weight="600" font-size="24" fill="#FFFFFF">VK Pay</text>
+
+  <rect x="494" y="280" width="210" height="54" rx="27" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
+  <g transform="translate(514 294) scale(1.08)" fill="none" stroke="#FF8F3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="8.5"/>
+    <path d="M12 7v5l3 2"/>
+  </g>
+  <text x="550" y="316" font-family="Golos Text" font-weight="600" font-size="24" fill="#FFFFFF">10:00–23:00</text>
+
+  <text x="64" y="430" font-family="Golos Text" font-weight="600" font-size="26" fill="#FFFFFF" fill-opacity="0.85">Доставляем по всему Нарьян-Мару</text>
+  <text x="64" y="468" font-family="Golos Text" font-weight="400" font-size="24" fill="#FFFFFF" fill-opacity="0.6">Заказ за 3 касания в мини-приложении · 0 ₽ от 700 ₽</text>
+</svg>

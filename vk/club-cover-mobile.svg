@@ -1,0 +1,87 @@
+<svg width="1196" height="600" viewBox="0 0 1196 600" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    
+    <radialGradient id="zg" cx="0.32" cy="0.28" r="0.95">
+      <stop offset="0" stop-color="#FFB13D"/>
+      <stop offset="0.55" stop-color="#FF7A00"/>
+      <stop offset="1" stop-color="#EF5300"/>
+    </radialGradient>
+    <radialGradient id="glowP" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7C2AE8" stop-opacity="0.4"/>
+      <stop offset="0.7" stop-color="#7C2AE8" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#7C2AE8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="aurP" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#C9B4FF"/>
+      <stop offset="0.6" stop-color="#7C2AE8"/>
+      <stop offset="1" stop-color="#5A18B8"/>
+    </linearGradient>
+    <linearGradient id="cardg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8A35F5"/>
+      <stop offset="1" stop-color="#42129E"/>
+    </linearGradient>
+    <linearGradient id="goldg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFD84D"/>
+      <stop offset="1" stop-color="#DFA612"/>
+    </linearGradient>
+    
+    <g id="mark">
+      <circle cx="32" cy="32" r="30" fill="url(#zg)"/>
+      <g transform="translate(4 0) skewX(-12)">
+        <path d="M14 16 H50 L30 39 H50 V48 H14 L34 25 H14 Z" fill="#FFFFFF"/>
+        <path d="M35 16 H39 L31 25 H27 Z" fill="#E84E00"/>
+        <path d="M33 39 H37 L29 48 H25 Z" fill="#E84E00"/>
+      </g>
+    </g>
+  </defs>
+
+  <rect width="1196" height="600" fill="#0D0A14"/>
+  <ellipse cx="280" cy="600" rx="700" ry="400" fill="url(#glowP)"/>
+  <path d="M-80 470 C 320 360, 700 260, 1260 130" stroke="url(#aurP)" stroke-width="22" fill="none" stroke-linecap="round" opacity="0.45"/>
+  <path d="M-80 530 C 360 410, 740 300, 1260 180" stroke="#C9B4FF" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.3"/>
+
+  <g fill="#FFFFFF">
+    <path transform="translate(700 80)" d="M0 -12 L3.3 -3.3 L12 0 L3.3 3.3 L0 12 L-3.3 3.3 L-12 0 L-3.3 -3.3 Z" opacity="0.75"/>
+    <path transform="translate(1090 66)" d="M0 -15 L4 -4 L15 0 L4 4 L0 15 L-4 4 L-15 0 L-4 -4 Z" opacity="0.85"/>
+  </g>
+
+  <ellipse cx="990" cy="380" rx="190" ry="190" fill="url(#glowP)"/>
+  <circle cx="990" cy="380" r="130" stroke="#7C2AE8" stroke-width="14" fill="none" opacity="0.9"/>
+  <circle cx="1148" cy="508" r="34" stroke="#FFC728" stroke-width="7" fill="none"/>
+
+  <g transform="translate(840 287) rotate(-8 150 92)">
+    <rect width="300" height="185" rx="24" fill="url(#cardg)" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="1.5"/>
+    <g transform="translate(185 30) scale(3)"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" fill="#FFFFFF" opacity="0.1"/></g>
+    <use xlink:href="#mark" href="#mark" transform="translate(20 20) scale(0.95)"/>
+    <text x="94" y="62" font-family="Unbounded" font-weight="800" font-size="30" fill="#FFFFFF">ZeSt <tspan fill="#C9B4FF">CLUB</tspan></text>
+    <text x="24" y="112" font-family="Golos Text" font-weight="700" font-size="13" letter-spacing="0.5" fill="#DCCBFF">ДОСТАВКА 0 ₽ · КЭШБЭК 10%</text>
+    <rect x="24" y="126" width="44" height="32" rx="6" fill="url(#goldg)"/>
+    <text x="82" y="149" font-family="Golos Text" font-weight="700" font-size="17" fill="#FFFFFF" fill-opacity="0.85">№ 0001 · НМ</text>
+    <text x="24" y="176" font-family="Unbounded" font-weight="700" font-size="14" letter-spacing="2" fill="#FFD84D">УЧАСТНИК КЛУБА</text>
+  </g>
+
+  <use xlink:href="#mark" href="#mark" transform="translate(64 96) scale(2.6)"/>
+  <text x="250" y="196" font-family="Unbounded" font-weight="900" font-size="76" fill="#FFFFFF">ZeSt <tspan fill="#A06BFF">CLUB</tspan></text>
+  <text x="254" y="252" font-family="Golos Text" font-weight="800" font-size="24" letter-spacing="5" fill="#C9B4FF">ЭНЕРГИЯ БЕЗ ГРАНИЦ</text>
+
+  <rect x="64" y="300" width="240" height="54" rx="27" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
+  <g transform="translate(85 314) scale(1.08)" fill="none" stroke="#C9B4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>
+  </g>
+  <text x="121" y="336" font-family="Golos Text" font-weight="600" font-size="24" fill="#FFFFFF">Доставка 0 ₽</text>
+
+  <rect x="324" y="300" width="215" height="54" rx="27" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
+  <g transform="translate(346 314) scale(1.08)" fill="none" stroke="#C9B4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3l1.9 5.6 5.6 1.9-5.6 1.9L12 18l-1.9-5.6L4.5 10.5l5.6-1.9L12 3z"/>
+  </g>
+  <text x="382" y="336" font-family="Golos Text" font-weight="600" font-size="24" fill="#FFFFFF">Кэшбэк 10%</text>
+
+  <rect x="559" y="300" width="205" height="54" rx="27" fill="#7C2AE8"/>
+  <g transform="translate(583 314) scale(1.08)" fill="none" stroke="#FFD84D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>
+  </g>
+  <text x="619" y="336" font-family="Golos Text" font-weight="600" font-size="24" fill="#FFFFFF">199 ₽/мес</text>
+
+  <text x="64" y="430" font-family="Golos Text" font-weight="600" font-size="26" fill="#FFFFFF" fill-opacity="0.85">ZeSt Club — подписка для своих</text>
+  <text x="64" y="468" font-family="Golos Text" font-weight="400" font-size="24" fill="#FFFFFF" fill-opacity="0.6">199 ₽/мес · год со скидкой 33% · отмена в один тап</text>
+</svg>

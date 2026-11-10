@@ -1,0 +1,10 @@
+<svg width="376" height="256" viewBox="0 0 376 256" xmlns="http://www.w3.org/2000/svg">
+  
+  <rect width="376" height="256" fill="#141419"/>
+  <circle cx="334" cy="16" r="120" stroke="#FFC728" stroke-opacity="0.3" stroke-width="14" fill="none"/>
+  <circle cx="36" cy="248" r="70" stroke="#FFC728" stroke-opacity="0.15" stroke-width="8" fill="none"/>
+  <rect x="28" y="28" width="60" height="60" rx="18" fill="#FFC728" fill-opacity="0.15"/>
+  <g transform="translate(41 41) scale(1.42)" fill="none" stroke="#FFC728" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 19 5"/><circle cx="7.5" cy="7.5" r="2.4"/><circle cx="16.5" cy="16.5" r="2.4"/></g>
+  <text x="30" y="152" font-family="Unbounded" font-weight="800" font-size="40" letter-spacing="1" fill="#FFFFFF">АКЦИИ</text>
+  <text x="30" y="202" font-family="Golos Text" font-weight="600" font-size="22" fill="#FFFFFF" fill-opacity="0.8">2 по цене 1 каждую неделю</text>
+</svg>

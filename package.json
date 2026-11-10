@@ -1,0 +1,38 @@
+{
+  "name": "zest-mini-app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tunnel": "vk-tunnel --app-id=0000000 --insecure=1 --http-protocol=http --ws-protocol=ws --host=localhost --port=5173",
+    "deploy": "vk-miniapps-deploy",
+    "cap:sync": "npm run build && npx cap sync",
+    "cap:open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/geolocation": "^8.2.4",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/preferences": "^8.0.1",
+    "@fontsource/golos-text": "^5.0.0",
+    "@fontsource/unbounded": "^5.0.0",
+    "@vkontakte/vk-bridge": "^2.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.0",
+    "@resvg/resvg-js": "^2.6.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "@vkontakte/vk-miniapps-deploy": "^1.0.3",
+    "@vkontakte/vk-tunnel": "^0.2.10",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.0"
+  }
+}
