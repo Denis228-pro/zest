@@ -7,7 +7,6 @@ import { fmtDate, fmtMoney, fmtTime, plural } from '../utils/format';
 import { allowNotifications, invite as vkInvite, showStory } from '../bridge/vkApi';
 import { supabaseEnabled, authSignOut, fetchBonusTx, updateProfile } from '../api/supabase';
 import type { BonusTx } from '../api/supabase';
-import { useInstall } from '../hooks/useInstall';
 import { Badge, Button, Empty, SectionTitle, Switch } from '../components/ui';
 import { Icon } from '../components/icons';
 import type { IconName } from '../components/icons';
@@ -24,7 +23,6 @@ export function ProfileScreen() {
   const router = useRouter();
   const toast = useToast();
   const [notif, setNotif] = useState(false);
-  const install = useInstall();
   const [phoneDraft, setPhoneDraft] = useState('');
   const [srvTxs, setSrvTxs] = useState<BonusTx[] | null>(null);
 
@@ -294,34 +292,6 @@ export function ProfileScreen() {
               <Button small onClick={savePhone}>
                 ОК
               </Button>
-            </div>
-          ) : null}
-          {install.canInstall ? (
-            <button
-              className="settings-row"
-              onClick={async () => {
-                const okInstall = await install.promptInstall();
-                toast(okInstall ? 'ZeSt установлен на телефон' : 'Установка отложена');
-              }}
-            >
-              <Icon name="arrow" size={18} />
-              <span className="grow">Установить приложение на телефон</span>
-              <Icon name="arrow" size={16} />
-            </button>
-          ) : null}
-          {install.isIOS && !install.isStandalone ? (
-            <div className="settings-row" onClick={() => toast('Safari → Поделиться → На экран Домой')} style={{ cursor: 'pointer' }}>
-              <Icon name="phone" size={18} />
-              <span className="grow">Добавить на экран iPhone</span>
-              <Icon name="arrow" size={16} />
-            </div>
-          ) : null}
-          {install.isStandalone ? (
-            <div className="settings-row">
-              <Icon name="check" size={18} />
-              <span className="grow ok" style={{ fontWeight: 700 }}>
-                Приложение установлено
-              </span>
             </div>
           ) : null}
           <div className="settings-row">

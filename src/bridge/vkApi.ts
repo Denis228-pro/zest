@@ -1,5 +1,4 @@
 import bridge from '@vkontakte/vk-bridge';
-import { isNative, nativeGeodata, nativeStorageGet, nativeStorageSet, nativeTaptic } from '../platform/native';
 
 export interface VKUser {
   id: number;
@@ -35,13 +34,6 @@ export async function getUser(): Promise<VKUser | null> {
 }
 
 export async function getGeodata(): Promise<{ lat: number; long: number } | null> {
-  if (isNative()) {
-    try {
-      return await nativeGeodata();
-    } catch {
-      return null;
-    }
-  }
   if (!isVKEnv()) {
     await delay(600);
     return { lat: 55.7558, long: 37.6173 };
@@ -86,12 +78,6 @@ export async function pay(amount: number, description: string): Promise<boolean>
 }
 
 export async function taptic(kind: 'light' | 'medium' | 'success' = 'light'): Promise<void> {
-  if (isNative()) {
-    try {
-      await nativeTaptic(kind);
-    } catch {}
-    return;
-  }
   if (!isVKEnv()) return;
   try {
     if (kind === 'success') {
@@ -171,17 +157,6 @@ export async function allowNotifications(): Promise<boolean> {
 }
 
 export async function storageGet(key: string): Promise<string | null> {
-  if (isNative()) {
-    try {
-      const v = await nativeStorageGet(key);
-      if (v) return v;
-    } catch {}
-    try {
-      return localStorage.getItem(key);
-    } catch {
-      return null;
-    }
-  }
   if (isVKEnv()) {
     try {
       const res = await send('VKWebAppStorageGet', { key });
@@ -200,12 +175,6 @@ export async function storageSet(key: string, value: string): Promise<void> {
   try {
     localStorage.setItem(key, value);
   } catch {}
-  if (isNative()) {
-    try {
-      await nativeStorageSet(key, value);
-    } catch {}
-    return;
-  }
   if (isVKEnv() && value.length <= 1900) {
     try {
       await send('VKWebAppStorageSet', { key, value });

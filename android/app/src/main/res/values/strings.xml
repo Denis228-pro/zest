@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">ZeSt</string>
-    <string name="title_activity_main">ZeSt</string>
-    <string name="package_name">ru.zest.naryanmar</string>
-    <string name="custom_url_scheme">ru.zest.naryanmar</string>
-</resources>

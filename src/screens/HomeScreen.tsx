@@ -15,22 +15,13 @@ import type { IconName } from '../components/icons';
 import { ProductCard } from '../components/ProductCard';
 import { SectionTitle, Skeleton } from '../components/ui';
 import type { BannerAction } from '../data/banners';
-import { useInstall } from '../hooks/useInstall';
 
 export function HomeScreen() {
   const { state, dispatch, isClub, cartCount, productById, banners, products, unreadNotifications } = useStore();
   const router = useRouter();
   const toast = useToast();
-  const install = useInstall();
   const [loading, setLoading] = useState(true);
   const [nowTick, setNowTick] = useState(Date.now());
-  const [installHidden, setInstallHidden] = useState(() => {
-    try {
-      return localStorage.getItem('zest_install_hide') === '1';
-    } catch {
-      return false;
-    }
-  });
 
   useEffect(() => {
     const t = window.setTimeout(() => setLoading(false), 600);
@@ -194,59 +185,6 @@ export function HomeScreen() {
           <span>Дроп недели закрывается через</span>
           <span className="drop-strip__timer">{dropCountdown}</span>
         </button>
-      ) : null}
-
-      {install.canInstall && !installHidden ? (
-        <div className="install-card">
-          <Logo size={34} />
-          <span className="grow">
-            <div style={{ fontWeight: 800, fontSize: 13.5 }}>Установите ZeSt на телефон</div>
-            <div className="muted" style={{ fontSize: 12 }}>
-              Иконка на экране, запуск в один тап, работает офлайн
-            </div>
-          </span>
-          <button
-            className="btn btn--sm"
-            onClick={async () => {
-              const okInstall = await install.promptInstall();
-              if (okInstall) toast('ZeSt установлен на телефон');
-            }}
-          >
-            Установить
-          </button>
-          <button
-            className="install-close"
-            onClick={() => {
-              localStorage.setItem('zest_install_hide', '1');
-              setInstallHidden(true);
-            }}
-            aria-label="Скрыть"
-          >
-            <Icon name="close" size={14} />
-          </button>
-        </div>
-      ) : null}
-
-      {install.isIOS && !install.isStandalone && !installHidden ? (
-        <div className="install-card">
-          <Logo size={34} />
-          <span className="grow">
-            <div style={{ fontWeight: 800, fontSize: 13.5 }}>Добавьте ZeSt на экран iPhone</div>
-            <div className="muted" style={{ fontSize: 12 }}>
-              Safari → Поделиться → «На экран „Домой“»
-            </div>
-          </span>
-          <button
-            className="install-close"
-            onClick={() => {
-              localStorage.setItem('zest_install_hide', '1');
-              setInstallHidden(true);
-            }}
-            aria-label="Скрыть"
-          >
-            <Icon name="close" size={14} />
-          </button>
-        </div>
       ) : null}
 
       <div className="section">
