@@ -8,6 +8,7 @@ import { OrderTimeline } from '../components/OrderTimeline';
 import { Button, Empty, SectionTitle, Stars } from '../components/ui';
 import { Icon } from '../components/icons';
 import { CanVisual } from '../components/CanVisual';
+import { supabaseEnabled, rateOrderSB, fetchProfile } from '../api/supabase';
 
 export function OrderScreen({ id }: { id: string }) {
   const { state, dispatch, isClub, productById } = useStore();
@@ -37,13 +38,26 @@ export function OrderScreen({ id }: { id: string }) {
     router.setTab('cart');
   };
 
-  const rate = (v: number) => {
+  const rate = async (v: number) => {
+    if (supabaseEnabled() && state.sbUser) {
+      try {
+        const got = await rateOrderSB(order.id);
+        toast(`Спасибо! +${got} бонусов за отзыв (${v}/5)`);
+        fetchProfile(state.sbUser.id).then(p => {
+          if (p) dispatch({ type: 'SB_PROFILE', profile: p });
+        });
+      } catch {
+        toast('Не удалось записать отзыв');
+      }
+      return;
+    }
     dispatch({ type: 'RATE_ORDER', orderId: order.id });
     toast(`Спасибо! +50 бонусов за отзыв (${v}/5)`);
   };
 
   const count = order.items.reduce((s, l) => s + l.qty, 0);
-  const totalMs = order.statusAt.delivered - order.createdAt;
+  const deliveredT = order.statusAt.delivered;
+  const totalMs = deliveredT ? deliveredT - order.createdAt : 60000;
   const etaPct = Math.min(100, Math.max(0, Math.round(((now - order.createdAt) / totalMs) * 100)));
 
   return (
