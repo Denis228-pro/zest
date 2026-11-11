@@ -5,8 +5,6 @@ import { useRouter } from '../context/RouterContext';
 import { useToast } from '../context/ToastContext';
 import { fmtDate, fmtMoney, fmtTime, plural } from '../utils/format';
 import { allowNotifications, invite as vkInvite, showStory } from '../bridge/vkApi';
-import { supabaseEnabled, authSignOut, fetchBonusTx, updateProfile } from '../api/supabase';
-import type { BonusTx } from '../api/supabase';
 import { Badge, Button, Empty, SectionTitle, Switch } from '../components/ui';
 import { Icon } from '../components/icons';
 import type { IconName } from '../components/icons';
@@ -23,8 +21,6 @@ export function ProfileScreen() {
   const router = useRouter();
   const toast = useToast();
   const [notif, setNotif] = useState(false);
-  const [phoneDraft, setPhoneDraft] = useState('');
-  const [srvTxs, setSrvTxs] = useState<BonusTx[] | null>(null);
 
   const user = state.user;
   const displayName = state.customName.trim() || user?.name || 'Гость ZeSt';
@@ -45,44 +41,10 @@ export function ProfileScreen() {
   const activeOrder = state.orders.find(o => o.status !== 'delivered');
   const referralCode = `ZEST-${(user?.id ?? 4719) % 10000}`;
 
-  useEffect(() => {
-    if (state.sbUser) {
-      fetchBonusTx(state.sbUser.id).then(setSrvTxs);
-      if (!state.customName && state.profile?.name) dispatch({ type: 'SET_NAME', name: state.profile.name });
-    } else {
-      setSrvTxs(null);
-    }
-  }, [state.sbUser]);
-
-  const saveName = async () => {
+  const saveName = () => {
     if (!nameDraft.trim()) return;
-    if (supabaseEnabled() && state.sbUser) {
-      try {
-        await updateProfile(state.sbUser.id, { name: nameDraft.trim() });
-        dispatch({ type: 'SET_NAME', name: nameDraft.trim() });
-        toast('Имя сохранено');
-      } catch {
-        toast('Не удалось сохранить имя');
-      }
-      return;
-    }
     dispatch({ type: 'SET_NAME', name: nameDraft.trim() });
     toast('Имя сохранено');
-  };
-
-  const savePhone = async () => {
-    if (!state.sbUser) return;
-    try {
-      await updateProfile(state.sbUser.id, { phone: phoneDraft.trim() });
-      toast('Телефон сохранён');
-    } catch {
-      toast('Не удалось сохранить телефон');
-    }
-  };
-
-  const logout = async () => {
-    await authSignOut();
-    toast('Вы вышли из аккаунта');
   };
 
   const onInvite = async () => {
@@ -146,7 +108,7 @@ export function ProfileScreen() {
         <div className="section">
           <SectionTitle>История бонусов</SectionTitle>
           <div className="card" style={{ padding: '8px 16px' }}>
-            {(srvTxs ?? state.bonusLog)
+            {state.bonusLog
               .slice(0, 6)
               .map(e => (
                 <div key={`${e.t}-${e.reason}`} className="blog-row">
@@ -278,22 +240,6 @@ export function ProfileScreen() {
               ОК
             </Button>
           </div>
-          {supabaseEnabled() && state.sbUser ? (
-            <div className="settings-row" style={{ flexWrap: 'wrap', rowGap: 8 }}>
-              <Icon name="phone" size={18} />
-              <input
-                className="input"
-                style={{ flex: 1, height: 38, padding: '0 10px', fontSize: 13.5 }}
-                placeholder="Телефон для курьера"
-                inputMode="tel"
-                value={phoneDraft}
-                onChange={e => setPhoneDraft(e.target.value)}
-              />
-              <Button small onClick={savePhone}>
-                ОК
-              </Button>
-            </div>
-          ) : null}
           <div className="settings-row">
             <Icon name="bell" size={18} />
             <span className="grow">Push-уведомления</span>

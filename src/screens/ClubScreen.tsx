@@ -4,7 +4,6 @@ import { useRouter } from '../context/RouterContext';
 import { useToast } from '../context/ToastContext';
 import { fmtDate, fmtMoney, plural } from '../utils/format';
 import { pay, taptic } from '../bridge/vkApi';
-import { clubSubscribe } from '../api/supabase';
 import { SectionTitle, Sheet } from '../components/ui';
 import { Icon } from '../components/icons';
 import type { IconName } from '../components/icons';
@@ -39,21 +38,6 @@ export function ClubScreen() {
     if (!ok) {
       toast('Не получилось оплатить. Попробуйте снова');
       return;
-    }
-    if (state.sbUser) {
-      try {
-        const until = await clubSubscribe(plan);
-        dispatch({
-          type: 'SB_CLUB',
-          club: { active: true, plan, until, paused: false, savedMoney: state.club?.savedMoney ?? 0 },
-        });
-        toast('Добро пожаловать в ZeSt Club!');
-        taptic('success');
-        return;
-      } catch {
-        toast('Сервер не подтвердил подписку, попробуйте ещё раз');
-        return;
-      }
     }
     dispatch({ type: 'SUBSCRIBE', plan });
     taptic('success');

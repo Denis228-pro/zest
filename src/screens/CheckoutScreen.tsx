@@ -6,9 +6,7 @@ import { SLOTS } from '../data/promos';
 import { effPrice, fmtMoney } from '../utils/format';
 import { getGeodata, getPhone, pay, taptic } from '../bridge/vkApi';
 import { submitOrder } from '../api/client';
-import { supabaseEnabled, placeOrderSB, refillOrderItems } from '../api/supabase';
 import { config } from '../config';
-import type { Order } from '../context/StoreContext';
 import { StackScreen } from '../components/StackScreen';
 import { Button, Chip, Sheet, Spinner, Switch } from '../components/ui';
 import { Icon } from '../components/icons';
@@ -92,11 +90,6 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
 
   const submit = async () => {
     if (busy) return;
-    if (supabaseEnabled() && !state.sbUser) {
-      toast('Войдите, чтобы оформить заказ');
-      router.go('auth');
-      return;
-    }
     setBusy(true);
     taptic('medium');
 
@@ -114,56 +107,6 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
       address: addressFull,
       slot,
     };
-
-    if (supabaseEnabled() && state.sbUser) {
-      let serverId: number;
-      try {
-        serverId = await placeOrderSB({
-          subtotal,
-          delivery,
-          discount,
-          bonusUsed,
-          total,
-          address: addressFull,
-          slot,
-          phone,
-          comment: comment.trim(),
-          items: state.cart.map(l => {
-            const p = productById(l.productId);
-            return { productId: l.productId, name: p?.name ?? '', qty: l.qty, unitPrice: p ? effPrice(p, isClub) : 0 };
-          }),
-        });
-      } catch (e: any) {
-        setBusy(false);
-        toast(e?.message ?? 'Не удалось оформить заказ');
-        return;
-      }
-      setBusy(false);
-      const now = Date.now();
-      const serverOrder: Order = {
-        id: serverId,
-        items: draft.lines,
-        subtotal,
-        delivery,
-        discount,
-        bonusUsed,
-        bonusEarned: Math.round(total * (isClub ? 0.1 : 0.05)),
-        total,
-        status: 'accepted',
-        rated: false,
-        createdAt: now,
-        address: addressFull,
-        slot,
-        statusAt: { accepted: now, assembling: now + 8000, transit: now + 20000, delivered: now + 40000 },
-      };
-      dispatch({ type: 'SET_SERVER_ORDERS', orders: [serverOrder, ...state.orders] });
-      refillOrderItems(serverOrder).then(full => {
-        if (full.items.length) dispatch({ type: 'UPDATE_SERVER_ORDER', order: full });
-      });
-      taptic('success');
-      router.replace('success', { id: serverId });
-      return;
-    }
 
     const ok = await pay(total, `Заказ ZeSt #${orderId}`);
     setBusy(false);

@@ -22,8 +22,6 @@ import { OrderScreen } from './screens/OrderScreen';
 import { NotificationsScreen } from './screens/NotificationsScreen';
 import { PromoHubScreen } from './screens/PromoHubScreen';
 import { QuizScreen } from './screens/QuizScreen';
-import { AuthScreen } from './screens/AuthScreen';
-import { AdminScreen } from './screens/AdminScreen';
 
 const FlyContext = createContext<(x: number, y: number, color: string) => void>(() => {});
 
@@ -113,8 +111,6 @@ function Shell() {
   else if (top.name === 'promos') content = <PromoHubScreen />;
   else if (top.name === 'quiz') content = <QuizScreen />;
   else if (top.name === 'notifications') content = <NotificationsScreen />;
-  else if (top.name === 'auth') content = <AuthScreen />;
-  else if (top.name === 'admin') content = <AdminScreen />;
   else
     content = (
       <StackScreen title="Ошибка">

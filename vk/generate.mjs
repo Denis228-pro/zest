@@ -703,4 +703,91 @@ const deliveryCoverMobile = `<svg width="1196" height="600" viewBox="0 0 1196 60
 writeFileSync('vk/delivery-cover-mobile.svg', deliveryCoverMobile);
 render('vk/png/delivery-cover-mobile.png', deliveryCoverMobile, 1196);
 
+const postSoon = `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="zg" cx="0.32" cy="0.28" r="0.95">
+      <stop offset="0" stop-color="#FFB13D"/>
+      <stop offset="0.55" stop-color="#FF7A00"/>
+      <stop offset="1" stop-color="#EF5300"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FF6A00" stop-opacity="0.5"/>
+      <stop offset="0.7" stop-color="#FF6A00" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#FF6A00" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="aur" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFC728"/>
+      <stop offset="0.6" stop-color="#FF6A00"/>
+      <stop offset="1" stop-color="#FF8F3E"/>
+    </linearGradient>
+    <linearGradient id="canE" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#000000" stop-opacity="0.28"/>
+      <stop offset="0.12" stop-color="#FF8A2B"/>
+      <stop offset="0.5" stop-color="#FF8A2B"/>
+      <stop offset="0.88" stop-color="#FF8A2B"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.32"/>
+    </linearGradient>
+    <linearGradient id="canT" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#000000" stop-opacity="0.2"/>
+      <stop offset="0.12" stop-color="#C9C9D2"/>
+      <stop offset="0.5" stop-color="#C9C9D2"/>
+      <stop offset="0.88" stop-color="#C9C9D2"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.25"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1080" height="1080" fill="#0F0F13"/>
+  <ellipse cx="300" cy="880" rx="700" ry="430" fill="url(#glow)"/>
+  <path d="M-60 820 C 300 720, 700 600, 1140 470" stroke="url(#aur)" stroke-width="22" fill="none" stroke-linecap="round" opacity="0.45"/>
+  <path d="M-60 890 C 340 780, 760 650, 1140 540" stroke="#FFC728" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.35"/>
+
+  <g fill="#FFFFFF">
+    <path transform="translate(760 100)" d="M0 -13 L3.3 -3.3 L13 0 L3.3 3.3 L0 13 L-3.3 3.3 L-13 0 L-3.3 -3.3 Z" opacity="0.75"/>
+    <path transform="translate(960 240)" d="M0 -15 L4 -4 L15 0 L4 4 L0 15 L-4 4 L-15 0 L-4 -4 Z" opacity="0.85"/>
+    <path transform="translate(520 120)" d="M0 -9 L2.5 -2.5 L9 0 L2.5 2.5 L0 9 L-2.5 2.5 L-9 0 L-2.5 -2.5 Z" opacity="0.5"/>
+  </g>
+
+  <circle cx="930" cy="170" r="120" stroke="#FF6A00" stroke-width="22" fill="none" opacity="0.8"/>
+  <circle cx="1010" cy="340" r="38" stroke="#FFC728" stroke-width="8" fill="none"/>
+
+  <rect x="96" y="90" width="400" height="64" rx="32" fill="#FFC728"/>
+  <text x="296" y="132" text-anchor="middle" font-family="Unbounded" font-weight="800" font-size="27" fill="#141419">СКОРО В ПРОДАЖЕ</text>
+
+  <text x="96" y="312" font-family="Unbounded" font-weight="900" font-size="96" fill="#FFFFFF">ЭНЕРГИЯ</text>
+  <text x="96" y="424" font-family="Unbounded" font-weight="900" font-size="96" fill="#FF8F3E">И ТОНИКИ</text>
+  <text x="96" y="482" font-family="Golos Text" font-weight="600" font-size="30" fill="#FFFFFF" fill-opacity="0.75">Два новых вкуса — уже совсем скоро в Нарьян-Маре</text>
+
+  <rect x="96" y="530" width="330" height="56" rx="28" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
+  <g transform="translate(116 544) scale(1.08)" fill="none" stroke="#FF8F3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>
+  </g>
+  <text x="152" y="566" font-family="Golos Text" font-weight="600" font-size="24" fill="#FFFFFF">Доставка 40–60 мин</text>
+
+  <rect x="96" y="606" width="320" height="56" rx="28" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
+  <g transform="translate(116 620) scale(1.08)" fill="none" stroke="#FF8F3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="6" y="2" width="12" height="20" rx="3"/>
+    <path d="M10.5 19h3"/>
+  </g>
+  <text x="152" y="642" font-family="Golos Text" font-weight="600" font-size="24" fill="#FFFFFF">Покупки внутри VK</text>
+
+  <rect x="96" y="682" width="350" height="56" rx="28" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
+  <g transform="translate(116 696) scale(1.08)" fill="none" stroke="#FF8F3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6M10.3 19a2 2 0 0 0 3.4 0"/>
+  </g>
+  <text x="152" y="722" font-family="Golos Text" font-weight="600" font-size="24" fill="#FFFFFF">Подпишись на новости</text>
+
+  <ellipse cx="760" cy="760" rx="310" ry="310" fill="url(#glow)"/>
+  <circle cx="760" cy="760" r="195" stroke="#FF6A00" stroke-width="24" fill="none" opacity="0.85"/>
+  <circle cx="1000" cy="930" r="52" stroke="#FFC728" stroke-width="10" fill="none"/>
+  <circle cx="520" cy="960" r="34" stroke="#FFFFFF" stroke-width="8" fill="none" opacity="0.25"/>
+  <g transform="rotate(-8 760 760)">
+    <path transform="translate(685.3 672) scale(6.5)" d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" fill="url(#zg)"/>
+  </g>
+
+  <text x="96" y="1002" font-family="Golos Text" font-weight="500" font-size="26" fill="#FFFFFF" fill-opacity="0.65">ZeSt · Нарьян-Мар · покупайте в приложении ВКонтакте</text>
+</svg>`;
+
+writeFileSync('vk/post-soon.svg', postSoon);
+render('vk/png/post-soon.png', postSoon, 1080);
+
 console.log('done');

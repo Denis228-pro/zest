@@ -9,7 +9,6 @@ import type { BannerData } from '../data/banners';
 import { effPrice } from '../utils/format';
 import { config } from '../config';
 import { fetchCatalog } from '../api/client';
-import { sb, authRestore, onAuthChange, fetchProfile, fetchSubscription, fetchOrders, fetchCatalogSB, subscribeOrderUpdates, refillOrderItems, clubSubscribe } from '../api/supabase';
 import { getUser, storageGet, storageSet, subscribeTheme, taptic } from '../bridge/vkApi';
 import { useToast } from './ToastContext';
 
@@ -96,8 +95,6 @@ export interface AppState {
   bonusLog: BonusEntry[];
   lastSpin: number;
   notifications: NotifItem[];
-  sbUser: { id: string; email: string } | null;
-  profile: { name: string; phone: string; isAdmin: boolean; bonusBalance?: number } | null;
   club: ClubState | null;
   orders: Order[];
   addresses: Address[];
@@ -149,11 +146,6 @@ export type Action =
   | { type: 'SPIN_WHEEL'; prize: number }
   | { type: 'PUSH_NOTIF'; title: string; text: string }
   | { type: 'READ_ALL' }
-  | { type: 'SB_SESSION'; user: { id: string; email: string } | null }
-  | { type: 'SB_PROFILE'; profile: { name: string; phone: string; isAdmin: boolean; bonusBalance?: number } | null }
-  | { type: 'SB_CLUB'; club: ClubState | null }
-  | { type: 'SET_SERVER_ORDERS'; orders: Order[] }
-  | { type: 'UPDATE_SERVER_ORDER'; order: Order }
   | { type: 'RESET' };
 
 const STORAGE_KEY = 'zest_state_v1';
@@ -173,8 +165,6 @@ const initialState: AppState = {
   bonusLog: [],
   lastSpin: 0,
   notifications: [],
-  sbUser: null,
-  profile: null,
   club: null,
   orders: [],
   addresses: [
@@ -366,22 +356,6 @@ function reducer(state: AppState, action: Action): AppState {
     }
     case 'READ_ALL':
       return { ...state, notifications: state.notifications.map(n => ({ ...n, read: true })) };
-    case 'SB_SESSION':
-      return { ...state, sbUser: action.user };
-    case 'SB_PROFILE':
-      return { ...state, profile: action.profile, bonusBalance: action.profile?.bonusBalance ?? state.bonusBalance };
-    case 'SB_CLUB':
-      return { ...state, club: action.club };    case 'SET_SERVER_ORDERS':
-      return { ...state, orders: action.orders };
-    case 'UPDATE_SERVER_ORDER': {
-      const exists = state.orders.some(o => o.id === action.order.id && !!state.sbUser);
-      return {
-        ...state,
-        orders: exists
-          ? state.orders.map(o => (o.id === action.order.id && !!state.sbUser ? action.order : o))
-          : [action.order, ...state.orders],
-      };
-    }
     case 'UNLOCK_PROMO':
       return state.unlockedPromos.includes(action.code)
         ? state
@@ -465,78 +439,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!state.initialized || !hydratedRef.current) return;
-    const { initialized: _i, catalogPreset: _c, products: _p, promos: _pr, banners: _b, sbUser: _su, profile: _pf, ...persist } = state;
+    const { initialized: _i, catalogPreset: _c, products: _p, promos: _pr, banners: _b, ...persist } = state;
     storageSet(STORAGE_KEY, JSON.stringify(persist));
   }, [state]);
 
   useEffect(() => {
-    if (!config.API_BASE_URL || config.SUPABASE_URL) return;
+    if (!config.API_BASE_URL) return;
     fetchCatalog(config.API_BASE_URL)
-      .then(data => {
-        if (data.products.length) dispatch({ type: 'SET_CATALOG', ...data });
-      })
-      .catch(() => {});
-  }, []);
-
-  const loadServerData = async (uid: string) => {
-    const prof = await fetchProfile(uid);
-    dispatch({ type: 'SB_PROFILE', profile: prof ?? { name: '', phone: '', isAdmin: false } });
-    const sub = await fetchSubscription(uid);
-    dispatch({
-      type: 'SB_CLUB',
-      club: sub && !sub.paused && sub.until > Date.now() ? { active: true, plan: sub.plan, until: sub.until, paused: false, savedMoney: 0 } : null,
-    });
-    const serverOrders = await fetchOrders(uid);
-    dispatch({ type: 'SET_SERVER_ORDERS', orders: serverOrders });
-  };
-
-  const prevSbUser = useRef<string | null>(null);
-  useEffect(() => {
-    const s = sb();
-    if (!s) return;
-    onAuthChange(async u => {
-      const prev = prevSbUser.current;
-      if (u && u.id !== prev) {
-        prevSbUser.current = u.id;
-        dispatch({ type: 'SB_SESSION', user: u });
-        await loadServerData(u.id);
-      } else if (!u && prev) {
-        prevSbUser.current = null;
-        dispatch({ type: 'SB_SESSION', user: null });
-        dispatch({ type: 'SB_CLUB', club: null });
-        dispatch({ type: 'SET_SERVER_ORDERS', orders: [] });
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    const s = sb();
-    if (!s || !state.sbUser) return;
-    const uid = state.sbUser.id;
-    return subscribeOrderUpdates(uid, async order => {
-      const full = order.items.length ? order : await refillOrderItems(order);
-      dispatch({ type: 'UPDATE_SERVER_ORDER', order: full });
-      if (full.status === 'assembling') {
-        toast(`Заказ #${full.id} собран, курьер готовится выехать`);
-        dispatch({ type: 'PUSH_NOTIF', title: `Заказ #${full.id} собран`, text: 'Курьер готовится выехать к вам' });
-      } else if (full.status === 'transit') {
-        toast('Курьер в пути, ждите через 15 минут');
-        dispatch({ type: 'PUSH_NOTIF', title: `Заказ #${full.id} в пути`, text: 'Курьер мчится к вам — ждите через 15 минут' });
-      } else if (full.status === 'delivered') {
-        toast('Заказ доставлен! Кэшбэк начислен');
-        dispatch({ type: 'PUSH_NOTIF', title: `Заказ #${full.id} доставлен`, text: 'Кэшбэк бонусами уже на вашем счёте' });
-        taptic('success');
-        fetchProfile(uid).then(p => {
-          if (p) dispatch({ type: 'SB_PROFILE', profile: p });
-        });
-      }
-    });
-  }, [state.sbUser, toast, dispatch]);
-
-  useEffect(() => {
-    const s = sb();
-    if (!s) return;
-    fetchCatalogSB()
       .then(data => {
         if (data.products.length) dispatch({ type: 'SET_CATALOG', ...data });
       })

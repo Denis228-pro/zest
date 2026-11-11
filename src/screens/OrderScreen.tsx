@@ -8,7 +8,6 @@ import { OrderTimeline } from '../components/OrderTimeline';
 import { Button, Empty, SectionTitle, Stars } from '../components/ui';
 import { Icon } from '../components/icons';
 import { CanVisual } from '../components/CanVisual';
-import { supabaseEnabled, rateOrderSB, fetchProfile } from '../api/supabase';
 
 export function OrderScreen({ id }: { id: string }) {
   const { state, dispatch, isClub, productById } = useStore();
@@ -38,19 +37,7 @@ export function OrderScreen({ id }: { id: string }) {
     router.setTab('cart');
   };
 
-  const rate = async (v: number) => {
-    if (supabaseEnabled() && state.sbUser) {
-      try {
-        const got = await rateOrderSB(order.id);
-        toast(`Спасибо! +${got} бонусов за отзыв (${v}/5)`);
-        fetchProfile(state.sbUser.id).then(p => {
-          if (p) dispatch({ type: 'SB_PROFILE', profile: p });
-        });
-      } catch {
-        toast('Не удалось записать отзыв');
-      }
-      return;
-    }
+  const rate = (v: number) => {
     dispatch({ type: 'RATE_ORDER', orderId: order.id });
     toast(`Спасибо! +50 бонусов за отзыв (${v}/5)`);
   };
