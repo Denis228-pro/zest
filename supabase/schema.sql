@@ -214,7 +214,7 @@ begin
   select bonus_balance into v_balance from public.profiles where id = uid for update;
   if v_bonus_used > 0 then
     if v_bonus_used > v_balance then raise exception 'insufficient bonuses'; end if;
-    if v_bonus_used > floor(v_total * 0.5) then raise exception 'bonus limit is 50% of total'; end if;
+    if v_bonus_used > floor(v_total * 0.5) then raise exception 'bonus limit is 50 percent of total'; end if;
   end if;
 
   insert into public.orders (
