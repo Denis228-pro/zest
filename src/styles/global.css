@@ -1215,6 +1215,15 @@ textarea {
   color: var(--red);
 }
 
+button.pay-row {
+  text-align: left;
+  color: inherit;
+}
+
+.pay-row--off {
+  box-shadow: inset 0 0 0 1.5px var(--line) !important;
+}
+
 .pay-overlay {
   position: fixed;
   inset: 0;

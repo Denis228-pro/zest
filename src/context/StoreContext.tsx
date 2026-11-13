@@ -49,6 +49,7 @@ export interface Order {
   createdAt: number;
   address: string;
   slot: string;
+  payment?: string;
   statusAt: Partial<Record<OrderStatus, number>>;
 }
 
@@ -116,6 +117,7 @@ export interface OrderDraft {
   total: number;
   address: string;
   slot: string;
+  payment?: string;
 }
 
 export type Action =
@@ -245,6 +247,7 @@ function reducer(state: AppState, action: Action): AppState {
         createdAt: now,
         address: action.draft.address,
         slot: action.draft.slot,
+        payment: action.draft.payment,
         statusAt: {
           accepted: now,
           assembling: now + 8000,

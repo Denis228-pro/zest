@@ -10,6 +10,13 @@ import { config } from '../config';
 import { StackScreen } from '../components/StackScreen';
 import { Button, Chip, Sheet, Spinner, Switch } from '../components/ui';
 import { Icon } from '../components/icons';
+import type { IconName } from '../components/icons';
+
+const PAY_OPTIONS: { id: string; icon: IconName; title: string; sub: string }[] = [
+  { id: 'vkpay', icon: 'card', title: 'VK Pay — сейчас онлайн', sub: 'Быстро и безопасно, карта уже в VK' },
+  { id: 'card', icon: 'card', title: 'Картой при получении', sub: 'Курьер привезёт терминал' },
+  { id: 'cash', icon: 'cash', title: 'Наличными при получении', sub: 'Подготовьте сумму без сдачи' },
+];
 
 export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
   const { state, dispatch, isClub, productById, deliveryCost, promos } = useStore();
@@ -41,6 +48,7 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
   const [newLabel, setNewLabel] = useState('');
   const [newValue, setNewValue] = useState('');
   const [busy, setBusy] = useState(false);
+  const [payment, setPayment] = useState('vkpay');
 
   useEffect(() => {
     getPhone().then(ph => {
@@ -90,9 +98,12 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
 
   const submit = async () => {
     if (busy) return;
-    setBusy(true);
-    taptic('medium');
-
+    const paymentLabel =
+      payment === 'vkpay'
+        ? 'VK Pay (онлайн)'
+        : payment === 'card'
+          ? 'Картой при получении'
+          : 'Наличными при получении';
     const addressFull = `${address.value}${comment.trim() ? `, ${comment.trim()}` : ''}`;
     const draft = {
       lines: state.cart.map(l => {
@@ -106,16 +117,23 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
       total,
       address: addressFull,
       slot,
+      payment: paymentLabel,
     };
+    setBusy(true);
+    taptic('medium');
 
-    const ok = await pay(total, `Заказ ZeSt #${orderId}`);
-    setBusy(false);
-    if (!ok) {
-      toast('Платёж не прошёл. Попробуйте ещё раз');
-      return;
+    if (payment === 'vkpay') {
+      const ok = await pay(total, `Заказ ZeSt #${orderId}`);
+      setBusy(false);
+      if (!ok) {
+        toast('Платёж не прошёл. Попробуйте ещё раз');
+        return;
+      }
     }
+
     dispatch({ type: 'PLACE_ORDER', draft });
     taptic('success');
+    setBusy(false);
     if (config.API_BASE_URL) {
       submitOrder(config.API_BASE_URL, {
         orderId,
@@ -125,6 +143,7 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
         slot,
         itemsText: lines.map(x => `${x.product.name} ×${x.line.qty}`).join('; '),
         total,
+        payment: paymentLabel,
       }).catch(() => {});
     }
     router.replace('success', { id: orderId });
@@ -197,20 +216,28 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
 
       <div className="field">
         <span className="field__label">
-          <Icon name="card" size={13} /> Оплата
+          <Icon name="card" size={13} /> Способ оплаты
         </span>
-        <div className="pay-row">
-          <span className="pay-row__ico">
-            <Icon name="card" size={20} />
-          </span>
-          <span className="grow">
-            <b>VK Pay</b>
-            <div className="addr-chip__value">Быстро и безопасно, карта уже в VK</div>
-          </span>
-          <span className="pay-row__check">
-            <Icon name="check" size={18} />
-          </span>
-        </div>
+        {PAY_OPTIONS.map(o => (
+          <button
+            key={o.id}
+            className={`pay-row ${payment === o.id ? '' : 'pay-row--off'}`}
+            onClick={() => setPayment(o.id)}
+          >
+            <span className="pay-row__ico">
+              <Icon name={o.icon} size={20} />
+            </span>
+            <span className="grow">
+              <b>{o.title}</b>
+              <div className="addr-chip__value">{o.sub}</div>
+            </span>
+            {payment === o.id ? (
+              <span className="pay-row__check">
+                <Icon name="check" size={18} />
+              </span>
+            ) : null}
+          </button>
+        ))}
       </div>
 
       <div className="card" style={{ marginTop: 16 }}>

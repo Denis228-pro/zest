@@ -35,7 +35,8 @@ export type IconName =
   | 'phone'
   | 'geo'
   | 'heart'
-  | 'percent';
+  | 'percent'
+  | 'cash';
 
 const PATHS: Record<IconName, ReactElement> = {
   home: (
@@ -169,6 +170,13 @@ const PATHS: Record<IconName, ReactElement> = {
       <path d="M5 19 19 5" />
       <circle cx="7.5" cy="7.5" r="2.4" />
       <circle cx="16.5" cy="16.5" r="2.4" />
+    </>
+  ),
+  cash: (
+    <>
+      <rect x="2" y="5" width="20" height="14" rx="3" />
+      <circle cx="12" cy="12" r="3" />
+      <path d="M5.5 8.5h.01M18.5 15.5h.01" />
     </>
   ),
 };

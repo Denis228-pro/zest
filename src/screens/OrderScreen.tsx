@@ -100,6 +100,10 @@ export function OrderScreen({ id }: { id: string }) {
           <span>{order.slot}</span>
         </div>
         <div className="sum-row">
+          <span>Оплата</span>
+          <span>{order.payment ?? 'VK Pay (онлайн)'}</span>
+        </div>
+        <div className="sum-row">
           <span>Доставка</span>
           <span>
             {order.delivery === 0 ? (isClub ? 'бесплатно · Club' : 'бесплатно') : fmtMoney(order.delivery)}

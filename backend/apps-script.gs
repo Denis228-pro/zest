@@ -27,7 +27,7 @@ function handleOrder(order) {
   let sheet = ss.getSheetByName('Заказы');
   if (!sheet) sheet = ss.insertSheet('Заказы');
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(['время', 'id', 'клиент', 'телефон', 'адрес', 'слот', 'состав', 'сумма', 'статус']);
+    sheet.appendRow(['время', 'id', 'клиент', 'телефон', 'адрес', 'слот', 'состав', 'сумма', 'оплата', 'статус']);
   }
   sheet.appendRow([
     new Date(),
@@ -38,6 +38,7 @@ function handleOrder(order) {
     order.slot || '',
     order.itemsText || '',
     order.total || 0,
+    order.payment || '',
     'новый',
   ]);
   notifyVK('Новый заказ №' + order.orderId + ' на ' + order.total + ' ₽ от ' + order.customer);
