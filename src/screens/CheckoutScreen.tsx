@@ -118,6 +118,7 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
       address: addressFull,
       slot,
       payment: paymentLabel,
+      deviceId: state.deviceId || undefined,
     };
     setBusy(true);
     taptic('medium');
@@ -126,7 +127,8 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
       const ok = await pay(total, `Заказ ZeSt #${orderId}`);
       setBusy(false);
       if (!ok) {
-        toast('Платёж не прошёл. Попробуйте ещё раз');
+        toast('VK Pay недоступен — выберите оплату при получении');
+        setPayment('cash');
         return;
       }
     }
@@ -144,6 +146,7 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
         itemsText: lines.map(x => `${x.product.name} ×${x.line.qty}`).join('; '),
         total,
         payment: paymentLabel,
+        device: state.deviceId || '',
       }).catch(() => {});
     }
     router.replace('success', { id: orderId });

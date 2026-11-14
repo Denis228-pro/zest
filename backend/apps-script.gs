@@ -2,13 +2,57 @@ const SHEET_ID = 'ВСТАВЬТЕ_ID_GOOGLE_ТАБЛИЦЫ';
 const VK_ACCESS_TOKEN = '';
 const VK_PEER_ID = '';
 
-function doGet() {
+const STATUS_MAP = {
+  'новый': 'accepted',
+  'собираем': 'assembling',
+  'собран': 'assembling',
+  'в пути': 'transit',
+  'доставлен': 'delivered',
+  'отменён': 'cancelled',
+  'отменен': 'cancelled',
+};
+
+function doGet(e) {
   const payload = {
     products: readSheet('Товары'),
     promos: readSheet('Промокоды'),
     banners: readSheet('Баннеры'),
+    statuses: readStatuses(),
   };
   return json(payload);
+}
+
+function doPost(e) {
+  let body = {};
+  try {
+    body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+  } catch (err) {
+    body = {};
+  }
+  if (body.action === 'order') return handleOrder(body.order);
+  return json({ result: 'ignored' });
+}
+
+function readStatuses() {
+  const sheet = getSheet('Заказы');
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  const rows = sheet.getDataRange().getDisplayValues();
+  const head = rows[0];
+  const idI = head.indexOf('id');
+  const stI = head.indexOf('статус');
+  if (idI < 0 || stI < 0) return [];
+  return rows
+    .slice(1)
+    .filter(function (r) {
+      return r[idI];
+    })
+    .map(function (r) {
+      return { id: r[idI], status: r[stI] };
+    });
+}
+
+function getSheet(name) {
+  return SpreadsheetApp.openById(SHEET_ID).getSheetByName(name);
 }
 
 function doPost(e) {
@@ -27,7 +71,7 @@ function handleOrder(order) {
   let sheet = ss.getSheetByName('Заказы');
   if (!sheet) sheet = ss.insertSheet('Заказы');
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(['время', 'id', 'клиент', 'телефон', 'адрес', 'слот', 'состав', 'сумма', 'оплата', 'статус']);
+    sheet.appendRow(['время', 'id', 'клиент', 'телефон', 'адрес', 'слот', 'состав', 'сумма', 'оплата', 'статус', 'device']);
   }
   sheet.appendRow([
     new Date(),
@@ -40,6 +84,7 @@ function handleOrder(order) {
     order.total || 0,
     order.payment || '',
     'новый',
+    order.device || '',
   ]);
   notifyVK('Новый заказ №' + order.orderId + ' на ' + order.total + ' ₽ от ' + order.customer);
   return json({ result: 'saved' });

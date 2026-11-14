@@ -1,6 +1,7 @@
 import type { Product } from '../data/products';
 import type { Promo } from '../data/promos';
 import type { BannerData, BannerActionType } from '../data/banners';
+import type { OrderStatus } from '../context/StoreContext';
 
 const CACHE_KEY = 'zest_remote_cache_v1';
 const CACHE_TTL = 86400000;
@@ -121,8 +122,7 @@ function normalize(raw: any): RemoteCatalog {
   };
 }
 
-export async function fetchCatalog(base: string): Promise<RemoteCatalog> {
-  try {
+export async function fetchCatalog(base: string): Promise<RemoteCatalog> {  try {
     const cat = normalize(await getJSON(base));
     if (!cat.products.length) throw new Error('empty catalog');
     try {
@@ -139,6 +139,21 @@ export async function fetchCatalog(base: string): Promise<RemoteCatalog> {
     } catch {}
     throw e;
   }
+}
+
+export async function fetchStatuses(base: string): Promise<{ id: string; status: OrderStatus }[]> {
+  const raw = await getJSON(base);
+  const list = Array.isArray(raw?.statuses) ? raw.statuses : [];
+  const map: Record<string, OrderStatus> = {
+    'новый': 'accepted',
+    'собираем': 'assembling',
+    'собран': 'assembling',
+    'в пути': 'transit',
+    'доставлен': 'delivered',
+  };
+  return (list as { id: unknown; status: unknown }[])
+    .map(s => ({ id: String(s.id ?? ''), status: map[String(s.status ?? '').trim().toLowerCase()] }))
+    .filter(s => s.id && s.status);
 }
 
 export async function submitOrder(base: string, order: Record<string, unknown>): Promise<void> {

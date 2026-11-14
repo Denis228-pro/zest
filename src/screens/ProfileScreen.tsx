@@ -5,6 +5,7 @@ import { useRouter } from '../context/RouterContext';
 import { useToast } from '../context/ToastContext';
 import { fmtDate, fmtMoney, fmtTime, plural } from '../utils/format';
 import { allowNotifications, invite as vkInvite, showStory } from '../bridge/vkApi';
+import { config } from '../config';
 import { Badge, Button, Empty, SectionTitle, Switch } from '../components/ui';
 import { Icon } from '../components/icons';
 import type { IconName } from '../components/icons';
@@ -270,7 +271,9 @@ export function ProfileScreen() {
           </button>
         </div>
         <div className="muted" style={{ fontSize: 11, marginTop: 10, textAlign: 'center' }}>
-          ZeSt Mini App · демо-режим · оплата и подписка эмулируются без бэкенда
+          {config.API_BASE_URL
+            ? 'Статусы заказов синхронизируются с CRM-таблицей автоматически'
+            : 'Демо-режим: статусы и оплата эмулируются'}
         </div>
       </div>
     </div>

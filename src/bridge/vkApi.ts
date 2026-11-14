@@ -60,21 +60,21 @@ export async function getPhone(): Promise<string | null> {
 }
 
 export async function pay(amount: number, description: string): Promise<boolean> {
-  if (!isVKEnv()) {
-    await delay(1200);
-    return true;
+  if (isVKEnv()) {
+    try {
+      const appId = Number(new URLSearchParams(window.location.search).get('vk_app_id')) || 0;
+      await send('VKWebAppOpenPayForm', {
+        app_id: appId,
+        action: 'pay-with-vkpay',
+        params: { amount, description, currency: 'RUB' },
+      });
+      return true;
+    } catch {
+      return false;
+    }
   }
-  try {
-    const appId = Number(new URLSearchParams(window.location.search).get('vk_app_id')) || 0;
-    await send('VKWebAppOpenPayForm', {
-      app_id: appId,
-      action: 'pay-with-vkpay',
-      params: { amount, description, currency: 'RUB' },
-    });
-    return true;
-  } catch {
-    return false;
-  }
+  await delay(1200);
+  return true;
 }
 
 export async function taptic(kind: 'light' | 'medium' | 'success' = 'light'): Promise<void> {

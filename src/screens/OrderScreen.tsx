@@ -49,7 +49,7 @@ export function OrderScreen({ id }: { id: string }) {
 
   return (
     <StackScreen title={`Заказ #${order.id}`}>
-      {order.status !== 'delivered' ? (
+      {order.status !== 'delivered' && deliveredT ? (
         <div className="free-dlv" style={{ marginBottom: 12 }}>
           <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
             <Icon name="clock" size={14} /> Курьер прибудет примерно через 40 минут

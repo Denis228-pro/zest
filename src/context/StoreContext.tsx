@@ -6,7 +6,7 @@ import type { Promo } from '../data/promos';
 import type { BannerData } from '../data/banners';
 import { effPrice } from '../utils/format';
 import { config } from '../config';
-import { fetchCatalog } from '../api/client';
+import { fetchCatalog, fetchStatuses } from '../api/client';
 import { getUser, storageGet, storageSet, subscribeTheme, taptic } from '../bridge/vkApi';
 import { useToast } from './ToastContext';
 
@@ -48,6 +48,7 @@ export interface Order {
   address: string;
   slot: string;
   payment?: string;
+  deviceId?: string;
   statusAt: Partial<Record<OrderStatus, number>>;
 }
 
@@ -94,6 +95,7 @@ export interface AppState {
   bonusLog: BonusEntry[];
   lastSpin: number;
   notifications: NotifItem[];
+  deviceId: string;
   club: ClubState | null;
   orders: Order[];
   addresses: Address[];
@@ -116,6 +118,7 @@ export interface OrderDraft {
   address: string;
   slot: string;
   payment?: string;
+  deviceId?: string;
 }
 
 export type Action =
@@ -146,6 +149,8 @@ export type Action =
   | { type: 'SPIN_WHEEL'; prize: number }
   | { type: 'PUSH_NOTIF'; title: string; text: string }
   | { type: 'READ_ALL' }
+  | { type: 'SET_DEVICE_ID'; id: string }
+  | { type: 'SET_ORDER_STATUS'; id: number; status: OrderStatus }
   | { type: 'RESET' };
 
 const STORAGE_KEY = 'zest_state_v1';
@@ -165,6 +170,7 @@ const initialState: AppState = {
   bonusLog: [],
   lastSpin: 0,
   notifications: [],
+  deviceId: '',
   club: null,
   orders: [],
   addresses: [
@@ -246,6 +252,7 @@ function reducer(state: AppState, action: Action): AppState {
         address: action.draft.address,
         slot: action.draft.slot,
         payment: action.draft.payment,
+        deviceId: action.draft.deviceId,
         statusAt: {
           accepted: now,
           assembling: now + 8000,
@@ -377,6 +384,30 @@ function reducer(state: AppState, action: Action): AppState {
           ? state.favorites.filter(f => f !== action.productId)
           : [...state.favorites, action.productId],
       };
+    case 'SET_DEVICE_ID':
+      return state.deviceId ? state : { ...state, deviceId: action.id };
+    case 'SET_ORDER_STATUS': {
+      const o = state.orders.find(x => x.id === action.id);
+      if (!o || o.status === action.status) return state;
+      const t = Date.now();
+      const updated: Order = {
+        ...o,
+        status: action.status,
+        statusAt: { ...o.statusAt, [action.status]: t },
+      };
+      let bonusBalance = state.bonusBalance;
+      let bonusLog = state.bonusLog;
+      if (action.status === 'delivered' && o.bonusEarned > 0) {
+        bonusBalance = state.bonusBalance + o.bonusEarned;
+        bonusLog = [...bonusLog, { t, amount: o.bonusEarned, reason: `Кэшбэк: заказ #${o.id}` } as BonusEntry];
+      }
+      return {
+        ...state,
+        orders: state.orders.map(x => (x.id === o.id ? updated : x)),
+        bonusBalance,
+        bonusLog: bonusLog.slice(-100),
+      };
+    }
     case 'RESET':
       return { ...initialState, initialized: true, onboarded: true, user: state.user, theme: state.theme };
     default:
@@ -454,9 +485,38 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (config.API_BASE_URL) return;
     const t = window.setInterval(() => dispatch({ type: 'TICK', now: Date.now() }), 1000);
     return () => window.clearInterval(t);
   }, []);
+
+  useEffect(() => {
+    if (state.initialized && !state.deviceId) {
+      const id =
+        typeof crypto !== 'undefined' && 'randomUUID' in crypto
+          ? crypto.randomUUID()
+          : `dev-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      dispatch({ type: 'SET_DEVICE_ID', id });
+    }
+  }, [state.initialized, state.deviceId, dispatch]);
+
+  useEffect(() => {
+    if (!config.API_BASE_URL || !state.orders.some(o => o.status !== 'delivered')) return;
+    const poll = async () => {
+      try {
+        const statuses = await fetchStatuses(config.API_BASE_URL);
+        statuses.forEach(s => {
+          const o = state.orders.find(x => String(x.id) === String(s.id));
+          if (!o || o.status === s.status) return;
+          if (STATUS_FLOW.indexOf(s.status) < STATUS_FLOW.indexOf(o.status)) return;
+          dispatch({ type: 'SET_ORDER_STATUS', id: o.id, status: s.status });
+        });
+      } catch {}
+    };
+    poll();
+    const t = window.setInterval(poll, 60000);
+    return () => window.clearInterval(t);
+  }, [state.orders, dispatch]);
 
   useEffect(() => {
     state.orders.forEach(o => {
