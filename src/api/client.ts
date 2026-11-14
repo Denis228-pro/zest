@@ -11,7 +11,8 @@ async function getJSON(url: string): Promise<any> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT);
   try {
-    const res = await fetch(url, { signal: ctrl.signal });
+    const bust = url.includes('?') ? '&' : '?';
+    const res = await fetch(url + bust + 't=' + Date.now(), { signal: ctrl.signal });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     return await res.json();
   } finally {
