@@ -110,7 +110,16 @@ export interface RemoteCatalog {
   products: Product[];
   promos: Promo[];
   banners: BannerData[];
+  statuses: { id: string; status: OrderStatus }[];
 }
+
+const STATUS_MAP: Record<string, OrderStatus> = {
+  'новый': 'accepted',
+  'собираем': 'assembling',
+  'собран': 'assembling',
+  'в пути': 'transit',
+  'доставлен': 'delivered',
+};
 
 function normalize(raw: any): RemoteCatalog {
   const productList = Array.isArray(raw) ? raw : Array.isArray(raw?.products) ? raw.products : [];
@@ -120,7 +129,33 @@ function normalize(raw: any): RemoteCatalog {
     products: productList.map(normProduct).filter((p: Product | null): p is Product => !!p),
     promos: promoList.map(normPromo).filter((p: Promo | null): p is Promo => !!p),
     banners: bannerList.map(normBanner).filter((b: BannerData | null): b is BannerData => !!b),
+    statuses: (Array.isArray(raw?.statuses) ? raw.statuses : [])
+      .map((s: any) => ({
+        id: String(s?.id ?? ''),
+        status: STATUS_MAP[String(s?.status ?? '').trim().toLowerCase()],
+      }))
+      .filter((s): s is { id: string; status: OrderStatus } => !!(s.id && s.status)),
   };
+}
+
+export async function fetchCatalog(base: string): Promise<RemoteCatalog> {
+  try {
+    const cat = normalize(await getJSON(base));
+    if (!cat.products.length) throw new Error('empty catalog');
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), cat }));
+    } catch {}
+    return cat;
+  } catch (e) {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Date.now() - parsed.t < CACHE_TTL && parsed.cat?.products?.length) return parsed.cat;
+      }
+    } catch {}
+    throw e;
+  }
 }
 
 export async function fetchCatalog(base: string): Promise<RemoteCatalog> {  try {
@@ -140,21 +175,6 @@ export async function fetchCatalog(base: string): Promise<RemoteCatalog> {  try 
     } catch {}
     throw e;
   }
-}
-
-export async function fetchStatuses(base: string): Promise<{ id: string; status: OrderStatus }[]> {
-  const raw = await getJSON(base);
-  const list = Array.isArray(raw?.statuses) ? raw.statuses : [];
-  const map: Record<string, OrderStatus> = {
-    'новый': 'accepted',
-    'собираем': 'assembling',
-    'собран': 'assembling',
-    'в пути': 'transit',
-    'доставлен': 'delivered',
-  };
-  return (list as { id: unknown; status: unknown }[])
-    .map(s => ({ id: String(s.id ?? ''), status: map[String(s.status ?? '').trim().toLowerCase()] }))
-    .filter(s => s.id && s.status);
 }
 
 export async function submitOrder(base: string, order: Record<string, unknown>): Promise<void> {

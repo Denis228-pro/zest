@@ -6,7 +6,8 @@ import type { Promo } from '../data/promos';
 import type { BannerData } from '../data/banners';
 import { effPrice } from '../utils/format';
 import { config } from '../config';
-import { fetchCatalog, fetchStatuses } from '../api/client';
+import { fetchCatalog } from '../api/client';
+import { useCallback, useReducer, useRef } from 'react';
 import { getUser, storageGet, storageSet, subscribeTheme, taptic } from '../bridge/vkApi';
 import { useToast } from './ToastContext';
 
@@ -439,14 +440,38 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     storageSet(STORAGE_KEY, JSON.stringify(persist));
   }, [state]);
 
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
+  const liveSync = useCallback(async () => {
+    if (!config.API_BASE_URL) return;
+    try {
+      const data = await fetchCatalog(config.API_BASE_URL);
+      if (data.products.length) {
+        dispatch({ type: 'SET_CATALOG', products: data.products, promos: data.promos, banners: data.banners });
+      }
+      data.statuses.forEach(s => {
+        const o = stateRef.current.orders.find(x => String(x.id) === String(s.id));
+        if (!o || o.status === s.status) return;
+        if (STATUS_FLOW.indexOf(s.status) < STATUS_FLOW.indexOf(o.status)) return;
+        dispatch({ type: 'SET_ORDER_STATUS', id: o.id, status: s.status });
+      });
+    } catch {}
+  }, [dispatch]);
+
   useEffect(() => {
     if (!config.API_BASE_URL) return;
-    fetchCatalog(config.API_BASE_URL)
-      .then(data => {
-        if (data.products.length) dispatch({ type: 'SET_CATALOG', ...data });
-      })
-      .catch(() => {});
-  }, []);
+    liveSync();
+    const t = window.setInterval(liveSync, 20000);
+    const onVis = () => {
+      if (document.visibilityState === 'visible') liveSync();
+    };
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      window.clearInterval(t);
+      document.removeEventListener('visibilitychange', onVis);
+    };
+  }, [liveSync]);
 
   useEffect(() => {
     if (state.initialized && !state.deviceId) {
@@ -457,24 +482,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'SET_DEVICE_ID', id });
     }
   }, [state.initialized, state.deviceId, dispatch]);
-
-  useEffect(() => {
-    if (!config.API_BASE_URL || !state.orders.some(o => o.status !== 'delivered')) return;
-    const poll = async () => {
-      try {
-        const statuses = await fetchStatuses(config.API_BASE_URL);
-        statuses.forEach(s => {
-          const o = state.orders.find(x => String(x.id) === String(s.id));
-          if (!o || o.status === s.status) return;
-          if (STATUS_FLOW.indexOf(s.status) < STATUS_FLOW.indexOf(o.status)) return;
-          dispatch({ type: 'SET_ORDER_STATUS', id: o.id, status: s.status });
-        });
-      } catch {}
-    };
-    poll();
-    const t = window.setInterval(poll, 60000);
-    return () => window.clearInterval(t);
-  }, [state.orders, dispatch]);
 
   useEffect(() => {
     state.orders.forEach(o => {
