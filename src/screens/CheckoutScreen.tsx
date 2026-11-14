@@ -50,6 +50,12 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
   const [busy, setBusy] = useState(false);
   const [payment, setPayment] = useState('vkpay');
 
+  const address = state.addresses.find(a => a.id === addressId) ?? state.addresses[0];
+
+  useEffect(() => {
+    if (state.addresses.length === 0) setAddSheet(true);
+  }, [state.addresses.length]);
+
   useEffect(() => {
     getPhone().then(ph => {
       if (ph) setPhone(ph);
@@ -65,8 +71,6 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
       </StackScreen>
     );
   }
-
-  const address = state.addresses.find(a => a.id === addressId) ?? state.addresses[0];
 
   const detectAddress = async () => {
     const geo = await getGeodata();
@@ -98,6 +102,15 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
 
   const submit = async () => {
     if (busy) return;
+    if (!address) {
+      toast('Добавьте адрес доставки');
+      setAddSheet(true);
+      return;
+    }
+    if (!phone.trim()) {
+      toast('Укажите телефон для курьера');
+      return;
+    }
     const paymentLabel =
       payment === 'vkpay'
         ? 'VK Pay (онлайн)'

@@ -135,7 +135,6 @@ export type Action =
   | { type: 'SET_ADDRESS'; addressId: string }
   | { type: 'ADD_ADDRESS'; address: Address }
   | { type: 'PLACE_ORDER'; draft: OrderDraft }
-  | { type: 'TICK'; now: number }
   | { type: 'RATE_ORDER'; orderId: number }
   | { type: 'SUBSCRIBE'; plan: 'month' | 'year' }
   | { type: 'PAUSE_CLUB'; paused: boolean }
@@ -144,8 +143,7 @@ export type Action =
   | { type: 'MARK_STORY' }
   | { type: 'UNLOCK_PROMO'; code: string }
   | { type: 'SET_PRESET'; preset: CatalogPreset | null }
-  | { type: 'TOGGLE_FAV'; productId: string }
-  | { type: 'SET_CATALOG'; products: Product[]; promos: Promo[]; banners: BannerData[] }
+  | { type: 'TOGGLE_FAV'; productId: string }  | { type: 'SET_CATALOG'; products: Product[]; promos: Promo[]; banners: BannerData[] }
   | { type: 'SPIN_WHEEL'; prize: number }
   | { type: 'PUSH_NOTIF'; title: string; text: string }
   | { type: 'READ_ALL' }
@@ -173,11 +171,8 @@ const initialState: AppState = {
   deviceId: '',
   club: null,
   orders: [],
-  addresses: [
-    { id: 'home', label: 'Дом', value: 'ул. Энергетическая, 7, кв. 42' },
-    { id: 'work', label: 'Работа', value: 'БЦ «Вольт», Пресненская наб., 12, офис 301' },
-  ],
-  addressId: 'home',
+  addresses: [],
+  addressId: '',
   favorites: [],
   streak: 0,
   unlockedPromos: [],
@@ -253,12 +248,7 @@ function reducer(state: AppState, action: Action): AppState {
         slot: action.draft.slot,
         payment: action.draft.payment,
         deviceId: action.draft.deviceId,
-        statusAt: {
-          accepted: now,
-          assembling: now + 8000,
-          transit: now + 20000,
-          delivered: now + 40000,
-        },
+        statusAt: { accepted: now },
       };
       const bonusLog =
         action.draft.bonusUsed > 0
@@ -271,32 +261,6 @@ function reducer(state: AppState, action: Action): AppState {
         bonusBalance: Math.max(0, state.bonusBalance - action.draft.bonusUsed),
         bonusLog: bonusLog.slice(-100),
       };
-    }
-    case 'TICK': {
-      let changed = false;
-      let balance = state.bonusBalance;
-      let streak = state.streak;
-      let savedMoney = state.club?.savedMoney ?? 0;
-      let bonusLog = state.bonusLog;
-      const orders = state.orders.map(o => {
-        if (o.status === 'delivered') return o;
-        const next = STATUS_FLOW[STATUS_FLOW.indexOf(o.status) + 1];
-        const at = next ? o.statusAt[next] : undefined;
-        if (next && at !== undefined && action.now >= at) {
-          changed = true;
-          if (next === 'delivered') {
-            balance += o.bonusEarned;
-            streak += 1;
-            savedMoney += o.delivery + o.bonusEarned;
-            bonusLog = [...bonusLog, { t: action.now, amount: o.bonusEarned, reason: `Кэшбэк: заказ #${o.id}` }];
-          }
-          return { ...o, status: next };
-        }
-        return o;
-      });
-      if (!changed) return state;
-      const club = state.club ? { ...state.club, savedMoney } : null;
-      return { ...state, orders, bonusBalance: balance, streak, club, bonusLog: bonusLog.slice(-100) };
     }
     case 'RATE_ORDER': {
       const target = state.orders.find(o => o.id === action.orderId);
@@ -482,12 +446,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         if (data.products.length) dispatch({ type: 'SET_CATALOG', ...data });
       })
       .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    if (config.API_BASE_URL) return;
-    const t = window.setInterval(() => dispatch({ type: 'TICK', now: Date.now() }), 1000);
-    return () => window.clearInterval(t);
   }, []);
 
   useEffect(() => {
