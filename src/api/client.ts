@@ -134,7 +134,7 @@ function normalize(raw: any): RemoteCatalog {
         id: String(s?.id ?? ''),
         status: STATUS_MAP[String(s?.status ?? '').trim().toLowerCase()],
       }))
-      .filter((s): s is { id: string; status: OrderStatus } => !!(s.id && s.status)),
+      .filter((s: { id: string; status: OrderStatus }): s is { id: string; status: OrderStatus } => !!(s.id && s.status)),
   };
 }
 
