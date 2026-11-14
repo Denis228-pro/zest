@@ -8,7 +8,7 @@ import { effPrice } from '../utils/format';
 import { config } from '../config';
 import { fetchCatalog } from '../api/client';
 import { useCallback } from 'react';
-import { getUser, storageGet, storageSet, subscribeTheme, taptic } from '../bridge/vkApi';
+import { getUser, vkInit, storageGet, storageSet, subscribeTheme, taptic } from '../bridge/vkApi';
 import { useToast } from './ToastContext';
 
 export type OrderStatus = 'accepted' | 'assembling' | 'transit' | 'delivered';
@@ -404,6 +404,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
+      await vkInit();
       let data: Partial<AppState> | null = null;
       try {
         const raw = await storageGet(STORAGE_KEY);

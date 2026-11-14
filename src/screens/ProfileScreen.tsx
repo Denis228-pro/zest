@@ -4,7 +4,7 @@ import { STATUS_META } from '../context/StoreContext';
 import { useRouter } from '../context/RouterContext';
 import { useToast } from '../context/ToastContext';
 import { fmtDate, fmtMoney, fmtTime, plural } from '../utils/format';
-import { allowNotifications, invite as vkInvite, showStory } from '../bridge/vkApi';
+import { invite as vkInvite, showStory } from '../bridge/vkApi';
 import { config } from '../config';
 import { Badge, Button, Empty, SectionTitle, Switch } from '../components/ui';
 import { Icon } from '../components/icons';
@@ -61,14 +61,6 @@ export function ProfileScreen() {
       toast('История опубликована: +100 бонусов и промокод STORY50');
     } else {
       toast('Не удалось открыть шторку историй');
-    }
-  };
-
-  const onNotif = async (v: boolean) => {
-    setNotif(v);
-    if (v) {
-      const ok = await allowNotifications();
-      toast(ok ? 'Уведомления включены: статусы заказа и скидки' : 'VK не дал разрешение на уведомления');
     }
   };
 
@@ -242,11 +234,6 @@ export function ProfileScreen() {
             </Button>
           </div>
           <div className="settings-row">
-            <Icon name="bell" size={18} />
-            <span className="grow">Push-уведомления</span>
-            <Switch checked={notif} onChange={onNotif} />
-          </div>
-          <div className="settings-row">
             <Icon name={state.theme === 'dark' ? 'moon' : 'sun'} size={18} />
             <span className="grow">Тёмная тема</span>
             <Switch
@@ -259,21 +246,6 @@ export function ProfileScreen() {
             <span className="grow">Поддержка</span>
             <Icon name="arrow" size={16} />
           </button>
-          <button
-            className="settings-row"
-            onClick={() => {
-              dispatch({ type: 'RESET' });
-              toast('Данные сброшены');
-            }}
-          >
-            <Icon name="trash" size={18} />
-            <span className="grow">Сбросить данные приложения</span>
-          </button>
-        </div>
-        <div className="muted" style={{ fontSize: 11, marginTop: 10, textAlign: 'center' }}>
-          {config.API_BASE_URL
-            ? 'Статусы заказов синхронизируются с CRM-таблицей автоматически'
-            : 'Демо-режим: статусы и оплата эмулируются'}
         </div>
       </div>
     </div>

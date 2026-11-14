@@ -159,10 +159,22 @@ export async function allowNotifications(): Promise<boolean> {
 export async function storageGet(key: string): Promise<string | null> {
   if (isVKEnv()) {
     try {
-      const res = await send('VKWebAppStorageGet', { key });
-      const v = res?.keys?.[key];
-      if (v) return v as string;
+      const meta = await send('VKWebAppStorageGet', { key });
+      const cnt = Number(meta?.keys?.[key] ?? 0);
+      if (cnt > 0) {
+        let out = '';
+        for (let i = 0; i < cnt; i++) {
+          const part = await send('VKWebAppStorageGet', { key: `${key}#${i}` });
+          out += part?.keys?.[`${key}#${i}`] ?? '';
+        }
+        if (out) return out;
+      }
     } catch {}
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
   }
   try {
     return localStorage.getItem(key);
@@ -175,9 +187,14 @@ export async function storageSet(key: string, value: string): Promise<void> {
   try {
     localStorage.setItem(key, value);
   } catch {}
-  if (isVKEnv() && value.length <= 1900) {
+  if (!isVKEnv()) return;
+  const chunks = Math.max(1, Math.ceil(value.length / 1800));
+  try {
+    await send('VKWebAppStorageSet', { key, value: String(chunks) });
+  } catch {}
+  for (let i = 0; i < chunks; i++) {
     try {
-      await send('VKWebAppStorageSet', { key, value });
+      await send('VKWebAppStorageSet', { key: `${key}#${i}`, value: value.slice(i * 1800, (i + 1) * 1800) });
     } catch {}
   }
 }
