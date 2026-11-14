@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext';
 import { useFly } from '../App';
 import { effPrice, fmtMoney } from '../utils/format';
 import { CanVisual } from '../components/CanVisual';
+import { ProductImage } from '../components/ProductImage';
 import { Badge, Button, Stars } from '../components/ui';
 import { Icon } from '../components/icons';
 import { taptic } from '../bridge/vkApi';
@@ -130,7 +131,7 @@ export function QuizScreen() {
               height: 210,
             }}
           >
-            <CanVisual product={product} size={118} />
+            <ProductImage product={product} className="pd__photo" canSize={118} />
             <span className="pd__badges">
               <Badge type="HIT" />
             </span>

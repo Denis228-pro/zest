@@ -8,6 +8,7 @@ import { effPrice, fmtMoney, hexToRgba } from '../utils/format';
 import { share, taptic } from '../bridge/vkApi';
 import { StackScreen } from '../components/StackScreen';
 import { CanVisual } from '../components/CanVisual';
+import { ProductImage } from '../components/ProductImage';
 import { ProductCard } from '../components/ProductCard';
 import { Badge, Button, Empty, SectionTitle, Stepper, Stars } from '../components/ui';
 import { Icon } from '../components/icons';
@@ -59,7 +60,7 @@ export function ProductScreen({ id }: { id: string }) {
         className="pd__visual"
         style={{ background: `radial-gradient(circle at 50% 30%, ${hexToRgba(product.can.body, 0.3)}, transparent 70%)` }}
       >
-        <CanVisual product={product} size={150} className="pd__can" />
+        <ProductImage product={product} className="pd__photo" canSize={150} />
         <span className="pd__badges">
           {product.badge ? <Badge type={product.badge} /> : null}
           {product.limited ? <Badge type="LIMITED" /> : null}

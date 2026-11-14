@@ -3,6 +3,7 @@ import { useStore } from '../context/StoreContext';
 import { useFly } from '../App';
 import { useToast } from '../context/ToastContext';
 import { CanVisual } from './CanVisual';
+import { ProductImage } from './ProductImage';
 import { Badge } from './ui';
 import { Icon } from './icons';
 import { effPrice, fmtMoney, hexToRgba } from '../utils/format';
@@ -28,7 +29,7 @@ export function ProductCard({ product, onOpen }: { product: import('../data/prod
         className="p-card__img"
         style={{ background: `radial-gradient(circle at 50% 38%, ${hexToRgba(product.can.body, 0.22)}, transparent 72%)` }}
       >
-        <CanVisual product={product} size={86} />
+        <ProductImage product={product} className="p-card__photo" canSize={86} />
         <div className="p-card__badges">
           {product.badge ? <Badge type={product.badge} /> : null}
         </div>

@@ -58,6 +58,7 @@ function normProduct(r: any): Product | null {
     badge: r.badge === 'NEW' || r.badge === 'HIT' ? r.badge : undefined,
     limited: bool(r.limited),
     rating: num(r.rating, 4.6),
+    photo: str(r.photo) || undefined,
     can: {
       body: str(r.canBody, '#FF6A00'),
       label: str(r.canLabel, '#FFFFFF'),
