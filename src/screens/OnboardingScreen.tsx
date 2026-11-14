@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { CanVisual } from '../components/CanVisual';
+import { Logo } from '../components/Logo';
 import { Button } from '../components/ui';
 
 const SLIDES = [
@@ -40,7 +41,7 @@ export function OnboardingScreen() {
       </button>
       <div className="onb__visual">
         <span className="onb__ring" />
-        <CanVisual product={product} size={150} className="onb__can" />
+        {product ? <CanVisual product={product} size={150} className="onb__can" /> : <Logo size={150} />}
       </div>
       <div className="onb__kicker">{slide.kicker}</div>
       <h1 className="onb__t">{slide.title}</h1>

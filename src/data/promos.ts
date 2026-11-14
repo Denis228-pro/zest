@@ -9,12 +9,7 @@ export interface Promo {
   description: string;
 }
 
-export const PROMOS: Promo[] = [
-  { code: 'ZEST10', type: 'percent', value: 10, description: '−10% на весь заказ' },
-  { code: 'CLUB15', type: 'percent', value: 15, clubOnly: true, description: '−15% для подписчиков ZeSt Club' },
-  { code: 'FIRST300', type: 'fixed', value: 100, minSubtotal: 500, firstOrderOnly: true, description: '−100 ₽ на первый заказ от 500 ₽' },
-  { code: 'STORY50', type: 'fixed', value: 50, needsUnlock: true, description: '−50 ₽ за репост в VK Историях' },
-];
+export const PROMOS: Promo[] = [];
 
 export const DELIVERY_PRICE = 99;
 export const FREE_FROM = 700;

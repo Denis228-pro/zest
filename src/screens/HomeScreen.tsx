@@ -110,7 +110,6 @@ export function HomeScreen() {
     cls: b.cls || 'banner--red',
     onAction: bannerAction(b.action),
   }));
-
   if (loading) {
     return (
       <div className="screen">
@@ -174,7 +173,7 @@ export function HomeScreen() {
         </button>
       ) : null}
 
-      <Carousel items={bannerItems} />
+      {bannerItems.length > 0 ? <Carousel items={bannerItems} /> : null}
 
       {hasLimited ? (
         <button
@@ -187,17 +186,33 @@ export function HomeScreen() {
         </button>
       ) : null}
 
+      {products.length === 0 ? (
+        <div className="card" style={{ marginTop: 16, textAlign: 'center' }}>
+          <Logo size={56} />
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 17, marginTop: 10 }}>
+            МЫ СКОРО ОТКРЫВАЕМСЯ
+          </div>
+          <div className="muted" style={{ fontSize: 13, marginTop: 6, lineHeight: 1.5 }}>
+            Каталог обновляется — загляните через пару минут
+          </div>
+        </div>
+      ) : null}
+
       <div className="section">
         <div className="chips-row">
           <button className="chip" onClick={repeatOrder}>
             <Icon name="repeat" size={14} /> Повторить заказ
           </button>
-          <button className="chip" onClick={() => openCatalog({ badge: 'NEW' })}>
-            Новинки
-          </button>
-          <button className="chip" onClick={() => openCatalog({ badge: 'HIT' })}>
-            Хиты
-          </button>
+          {products.length > 0 ? (
+            <>
+              <button className="chip" onClick={() => openCatalog({ badge: 'NEW' })}>
+                Новинки
+              </button>
+              <button className="chip" onClick={() => openCatalog({ badge: 'HIT' })}>
+                Хиты
+              </button>
+            </>
+          ) : null}
           <button className="chip" onClick={() => router.setTab('club')}>
             ZeSt Club
           </button>
@@ -223,55 +238,59 @@ export function HomeScreen() {
         <span className="club-banner__cta">{isClub ? 'Открыть' : '199 ₽'}</span>
       </button>
 
-      <div className="section">
-        <SectionTitle action={<button className="section__link" onClick={() => openCatalog({})}>Все</button>}>
-          Категории
-        </SectionTitle>
-        <div className="cat-grid">
-          {CATEGORY_META.map(c => (
-            <button key={c.id} className="cat-tile" onClick={() => openCatalog({ category: c.id })}>
-              <span className="cat-tile__ico">
-                <Icon name={c.icon} size={20} />
-              </span>
-              {c.name}
-              <span className="cat-tile__n">{products.filter(p => p.category === c.id).length}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="section">
-        <SectionTitle action={<button className="section__link" onClick={() => openCatalog({ badge: 'NEW' })}>Все новинки</button>}>
-          Свежий дроп
-        </SectionTitle>
-        <div className="h-scroll">
-          {newProducts.map(p => (
-            <ProductCard key={p.id} product={p} onOpen={() => router.go('product', { id: p.id })} />
-          ))}
-        </div>
-      </div>
-
-      {favProducts.length > 0 ? (
-        <div className="section">
-          <SectionTitle>Любимое</SectionTitle>
-          <div className="h-scroll">
-            {favProducts.map(p => (
-              <ProductCard key={p.id} product={p} onOpen={() => router.go('product', { id: p.id })} />
-            ))}
+      {products.length > 0 ? (
+        <>
+          <div className="section">
+            <SectionTitle action={<button className="section__link" onClick={() => openCatalog({})}>Все</button>}>
+              Категории
+            </SectionTitle>
+            <div className="cat-grid">
+              {CATEGORY_META.map(c => (
+                <button key={c.id} className="cat-tile" onClick={() => openCatalog({ category: c.id })}>
+                  <span className="cat-tile__ico">
+                    <Icon name={c.icon} size={20} />
+                  </span>
+                  {c.name}
+                  <span className="cat-tile__n">{products.filter(p => p.category === c.id).length}</span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      ) : null}
 
-      <div className="section">
-        <SectionTitle action={<button className="section__link" onClick={() => openCatalog({ badge: 'HIT' })}>Смотреть все</button>}>
-          Хиты продаж
-        </SectionTitle>
-        <div className="h-scroll">
-          {hits.map(p => (
-            <ProductCard key={p.id} product={p} onOpen={() => router.go('product', { id: p.id })} />
-          ))}
-        </div>
-      </div>
+          <div className="section">
+            <SectionTitle action={<button className="section__link" onClick={() => openCatalog({ badge: 'NEW' })}>Все новинки</button>}>
+              Свежий дроп
+            </SectionTitle>
+            <div className="h-scroll">
+              {newProducts.map(p => (
+                <ProductCard key={p.id} product={p} onOpen={() => router.go('product', { id: p.id })} />
+              ))}
+            </div>
+          </div>
+
+          {favProducts.length > 0 ? (
+            <div className="section">
+              <SectionTitle>Любимое</SectionTitle>
+              <div className="h-scroll">
+                {favProducts.map(p => (
+                  <ProductCard key={p.id} product={p} onOpen={() => router.go('product', { id: p.id })} />
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="section">
+            <SectionTitle action={<button className="section__link" onClick={() => openCatalog({ badge: 'HIT' })}>Смотреть все</button>}>
+              Хиты продаж
+            </SectionTitle>
+            <div className="h-scroll">
+              {hits.map(p => (
+                <ProductCard key={p.id} product={p} onOpen={() => router.go('product', { id: p.id })} />
+              ))}
+            </div>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

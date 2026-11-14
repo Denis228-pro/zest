@@ -158,6 +158,10 @@ export function QuizScreen() {
             </Button>
           </div>
         </>
+      ) : done ? (
+        <div className="muted" style={{ textAlign: 'center', marginTop: 24, lineHeight: 1.5 }}>
+          Каталог обновляется — загляните через пару минут
+        </div>
       ) : null}
 
       {done ? (

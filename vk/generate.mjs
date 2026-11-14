@@ -790,4 +790,81 @@ const postSoon = `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns=
 writeFileSync('vk/post-soon.svg', postSoon);
 render('vk/png/post-soon.png', postSoon, 1080);
 
+const postPromo = `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="zg" cx="0.32" cy="0.28" r="0.95">
+      <stop offset="0" stop-color="#FFB13D"/>
+      <stop offset="0.55" stop-color="#FF7A00"/>
+      <stop offset="1" stop-color="#EF5300"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FF6A00" stop-opacity="0.5"/>
+      <stop offset="0.7" stop-color="#FF6A00" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#FF6A00" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="aur" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFC728"/>
+      <stop offset="0.6" stop-color="#FF6A00"/>
+      <stop offset="1" stop-color="#FF8F3E"/>
+    </linearGradient>
+    <linearGradient id="promoRed" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF6A00"/>
+      <stop offset="1" stop-color="#B31217"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1080" height="1080" fill="#0F0F13"/>
+  <ellipse cx="300" cy="880" rx="700" ry="430" fill="url(#glow)"/>
+  <path d="M-60 300 C 300 200, 700 120, 1140 40" stroke="url(#aur)" stroke-width="20" fill="none" stroke-linecap="round" opacity="0.45"/>
+  <path d="M-60 370 C 340 260, 760 170, 1140 90" stroke="#FFC728" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.35"/>
+
+  <g fill="#FFFFFF">
+    <path transform="translate(980 380)" d="M0 -13 L3.3 -3.3 L13 0 L3.3 3.3 L0 13 L-3.3 3.3 L-13 0 L-3.3 -3.3 Z" opacity="0.75"/>
+    <path transform="translate(870 90)" d="M0 -15 L4 -4 L15 0 L4 4 L0 15 L-4 4 L-15 0 L-4 -4 Z" opacity="0.85"/>
+    <path transform="translate(1060 210)" d="M0 -9 L2.5 -2.5 L9 0 L2.5 2.5 L0 9 L-2.5 2.5 L-9 0 L-2.5 -2.5 Z" opacity="0.5"/>
+  </g>
+
+  <circle cx="880" cy="240" r="110" stroke="#FF6A00" stroke-width="20" fill="none" opacity="0.8"/>
+  <circle cx="1050" cy="90" r="34" stroke="#FFC728" stroke-width="8" fill="none"/>
+
+  <rect x="96" y="86" width="470" height="64" rx="32" fill="#FFC728"/>
+  <text x="331" y="124" text-anchor="middle" font-family="Unbounded" font-weight="800" font-size="24" fill="#141419">СТАРТ ПРОДАЖ БЛИЗКО</text>
+
+  <text x="96" y="268" font-family="Unbounded" font-weight="900" font-size="88" fill="#FFFFFF">ТРИ АКЦИИ</text>
+  <text x="96" y="352" font-family="Golos Text" font-weight="800" font-size="30" letter-spacing="6" fill="#FF8F3E">ДЛЯ ВСЕХ ПОКУПАТЕЛЕЙ</text>
+
+  <rect x="96" y="470" width="888" height="150" rx="24" fill="#FFFFFF" fill-opacity="0.07" stroke="#FF6A00" stroke-opacity="0.55" stroke-width="2"/>
+  <rect x="128" y="515" width="60" height="60" rx="16" fill="#FF6A00" fill-opacity="0.15"/>
+  <g transform="translate(141 528) scale(1.42)" fill="none" stroke="#FF8F3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 19 19 5"/><circle cx="7.5" cy="7.5" r="2.4"/><circle cx="16.5" cy="16.5" r="2.4"/>
+  </g>
+  <text x="220" y="556" font-family="Unbounded" font-weight="800" font-size="32" fill="#FFFFFF">НЕДЕЛЯ ВКУСА</text>
+  <text x="220" y="600" font-family="Golos Text" font-weight="600" font-size="24" fill="#FFC728">2 по цене 1 — каждую неделю</text>
+
+  <rect x="96" y="640" width="888" height="150" rx="24" fill="#FFFFFF" fill-opacity="0.07" stroke="#FF6A00" stroke-opacity="0.55" stroke-width="2"/>
+  <rect x="128" y="685" width="60" height="60" rx="16" fill="#FF6A00" fill-opacity="0.15"/>
+  <g transform="translate(141 698) scale(1.42)" fill="none" stroke="#FF8F3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="8" width="18" height="12" rx="2"/>
+    <path d="M3 12h18M12 8v12"/>
+  </g>
+  <text x="220" y="726" font-family="Unbounded" font-weight="800" font-size="32" fill="#FFFFFF">СЕЗОННЫЕ АКЦИИ</text>
+  <text x="220" y="770" font-family="Golos Text" font-weight="600" font-size="24" fill="#FFFFFF" fill-opacity="0.75">Скидки к сезону, погоде и праздникам</text>
+
+  <rect x="96" y="810" width="888" height="150" rx="24" fill="url(#promoRed)"/>
+  <rect x="128" y="855" width="60" height="60" rx="16" fill="#FFFFFF" fill-opacity="0.18"/>
+  <g transform="translate(141 868) scale(1.42)" fill="none" stroke="#FFD84D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3l1.9 5.6 5.6 1.9-5.6 1.9L12 18l-1.9-5.6L4.5 10.5l5.6-1.9L12 3z"/>
+  </g>
+  <text x="220" y="896" font-family="Unbounded" font-weight="800" font-size="32" fill="#FFFFFF">«5 + 1»</text>
+  <text x="220" y="940" font-family="Golos Text" font-weight="600" font-size="24" fill="#FFFFFF" fill-opacity="0.9">Шестой заказ энергетиков — бесплатно</text>
+
+  <rect x="96" y="988" width="76" height="52" rx="14" fill="#141419" stroke="#FFFFFF" stroke-opacity="0.25" stroke-width="1.5"/>
+  <text x="134" y="1024" text-anchor="middle" font-family="Unbounded" font-weight="800" font-size="26" fill="#FFFFFF">18+</text>
+  <text x="196" y="1008" font-family="Golos Text" font-weight="600" font-size="25" fill="#FFFFFF" fill-opacity="0.8">Подробности и старт продаж — в сообществе</text>
+  <text x="196" y="1046" font-family="Golos Text" font-weight="500" font-size="24" fill="#FFFFFF" fill-opacity="0.55">Покупай в приложении ZeSt во ВКонтакте · Нарьян-Мар</text>
+</svg>`;
+
+writeFileSync('vk/post-promo.svg', postPromo);
+render('vk/png/post-promo.png', postPromo, 1080);
+
 console.log('done');

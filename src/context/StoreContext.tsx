@@ -1,10 +1,8 @@
 import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
 import type { Dispatch, ReactNode } from 'react';
-import { PRODUCTS as LOCAL_PRODUCTS } from '../data/products';
 import type { Product } from '../data/products';
-import { DELIVERY_PRICE, FREE_FROM, PROMOS as LOCAL_PROMOS } from '../data/promos';
+import { DELIVERY_PRICE, FREE_FROM } from '../data/promos';
 import type { Promo } from '../data/promos';
-import { DEFAULT_BANNERS } from '../data/banners';
 import type { BannerData } from '../data/banners';
 import { effPrice } from '../utils/format';
 import { config } from '../config';
@@ -159,9 +157,9 @@ const initialState: AppState = {
   customName: '',
   theme: 'light',
   city: 'Москва',
-  products: LOCAL_PRODUCTS,
-  promos: LOCAL_PROMOS,
-  banners: DEFAULT_BANNERS,
+  products: [],
+  promos: [],
+  banners: [],
   cart: [],
   bonusBalance: 300,
   bonusLog: [],

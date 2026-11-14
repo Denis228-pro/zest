@@ -140,7 +140,9 @@ export function CatalogScreen() {
 
       <div className="section">
         <SectionTitle>Найдено: {list.length}</SectionTitle>
-        {list.length === 0 ? (
+        {products.length === 0 ? (
+          <Empty icon="cart" title="Каталог обновляется" text="Товары добавляются в Google Таблицу — загляните через пару минут" />
+        ) : list.length === 0 ? (
           <Empty icon="search" title="Ничего не нашли" text="Попробуйте изменить фильтры или поискать другой вкус" />
         ) : (
           <div className="p-grid">
