@@ -7,7 +7,7 @@ import type { BannerData } from '../data/banners';
 import { effPrice } from '../utils/format';
 import { config } from '../config';
 import { fetchCatalog } from '../api/client';
-import { useCallback, useReducer, useRef } from 'react';
+import { useCallback } from 'react';
 import { getUser, storageGet, storageSet, subscribeTheme, taptic } from '../bridge/vkApi';
 import { useToast } from './ToastContext';
 

@@ -158,25 +158,6 @@ export async function fetchCatalog(base: string): Promise<RemoteCatalog> {
   }
 }
 
-export async function fetchCatalog(base: string): Promise<RemoteCatalog> {  try {
-    const cat = normalize(await getJSON(base));
-    if (!cat.products.length) throw new Error('empty catalog');
-    try {
-      localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), cat }));
-    } catch {}
-    return cat;
-  } catch (e) {
-    try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Date.now() - parsed.t < CACHE_TTL && parsed.cat?.products?.length) return parsed.cat;
-      }
-    } catch {}
-    throw e;
-  }
-}
-
 export async function submitOrder(base: string, order: Record<string, unknown>): Promise<void> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT);
