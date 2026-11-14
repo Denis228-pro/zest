@@ -78,7 +78,7 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
       toast('Не удалось получить геопозицию');
       return;
     }
-    setNewValue(`Москва, точка ${geo.lat.toFixed(4)}, ${geo.long.toFixed(4)}`);
+    setNewValue(`Нарьян-Мар, точка ${geo.lat.toFixed(4)}, ${geo.long.toFixed(4)}`);
     if (!newLabel.trim()) setNewLabel('Геопозиция');
     toast('Определили по VK Геолокации — уточните подъезд');
   };

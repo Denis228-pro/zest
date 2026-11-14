@@ -160,7 +160,7 @@ const initialState: AppState = {
   user: null,
   customName: '',
   theme: 'light',
-  city: 'Москва',
+  city: 'Нарьян-Мар',
   products: [],
   promos: [],
   banners: [],

@@ -606,7 +606,7 @@ const deliveryCoverDesktop = `<svg width="1920" height="768" viewBox="0 0 1920 7
 
   <use xlink:href="#mark" href="#mark" transform="translate(96 108) scale(3)"/>
   <text x="356" y="262" font-family="Unbounded" font-weight="900" font-size="104" letter-spacing="2" fill="#FFFFFF">ДОСТАВКА</text>
-  <text x="362" y="332" font-family="Golos Text" font-weight="800" font-size="36" letter-spacing="6" fill="#FF8F3E">40–60 МИНУТ ПО НАРЬЯН-МАРУ</text>
+  <text x="362" y="332" font-family="Golos Text" font-weight="800" font-size="34" letter-spacing="4" fill="#FF8F3E">40–60 МИНУТ · ГОРОД И ИСКАТЕЛИ</text>
 
   <rect x="96" y="430" width="430" height="64" rx="32" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
   <g transform="translate(120 446) scale(1.33)" fill="none" stroke="#FF8F3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -634,7 +634,7 @@ const deliveryCoverDesktop = `<svg width="1920" height="768" viewBox="0 0 1920 7
   </g>
   <text x="1150" y="472" font-family="Golos Text" font-weight="600" font-size="28" fill="#FFFFFF">Заказ за 3 касания</text>
 
-  <text x="96" y="712" font-family="Golos Text" font-weight="400" font-size="30" fill="#FFFFFF" fill-opacity="0.6">Доставляем энергетики, воду и лимонады · Нарьян-Мар · ежедневно 10:00–23:00</text>
+  <text x="96" y="712" font-family="Golos Text" font-weight="400" font-size="30" fill="#FFFFFF" fill-opacity="0.6">Доставляем энергетики, воду и лимонады · Нарьян-Мар и Искатели · ежедневно 10:00–23:00</text>
 </svg>`;
 
 writeFileSync('vk/delivery-cover-desktop.svg', deliveryCoverDesktop);
@@ -696,7 +696,7 @@ const deliveryCoverMobile = `<svg width="1196" height="600" viewBox="0 0 1196 60
   </g>
   <text x="550" y="316" font-family="Golos Text" font-weight="600" font-size="24" fill="#FFFFFF">10:00–23:00</text>
 
-  <text x="64" y="430" font-family="Golos Text" font-weight="600" font-size="26" fill="#FFFFFF" fill-opacity="0.85">Доставляем по всему Нарьян-Мару</text>
+  <text x="64" y="430" font-family="Golos Text" font-weight="600" font-size="26" fill="#FFFFFF" fill-opacity="0.85">Доставляем по Нарьян-Мару и Искателям</text>
   <text x="64" y="468" font-family="Golos Text" font-weight="400" font-size="24" fill="#FFFFFF" fill-opacity="0.6">Заказ за 3 касания в мини-приложении · 0 ₽ от 700 ₽</text>
 </svg>`;
 
@@ -755,7 +755,7 @@ const postSoon = `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns=
 
   <text x="96" y="312" font-family="Unbounded" font-weight="900" font-size="96" fill="#FFFFFF">ЭНЕРГИЯ</text>
   <text x="96" y="424" font-family="Unbounded" font-weight="900" font-size="96" fill="#FF8F3E">И ТОНИКИ</text>
-  <text x="96" y="482" font-family="Golos Text" font-weight="600" font-size="30" fill="#FFFFFF" fill-opacity="0.75">Два новых вкуса — уже совсем скоро в Нарьян-Маре</text>
+  <text x="96" y="482" font-family="Golos Text" font-weight="600" font-size="30" fill="#FFFFFF" fill-opacity="0.75">Два новых вкуса — уже совсем скоро в Нарьян-Маре и Искателях</text>
 
   <rect x="96" y="530" width="330" height="56" rx="28" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
   <g transform="translate(116 544) scale(1.08)" fill="none" stroke="#FF8F3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

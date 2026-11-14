@@ -79,8 +79,8 @@ export function HomeScreen() {
       toast('Не удалось определить локацию');
       return;
     }
-    dispatch({ type: 'SET_CITY', city: 'Москва' });
-    toast('Зона доставки: Москва');
+    dispatch({ type: 'SET_CITY', city: 'Нарьян-Мар' });
+    toast('Зона доставки: Нарьян-Мар и Искателей');
   };
 
   const activeOrder = state.orders.find(o => o.status !== 'delivered');
