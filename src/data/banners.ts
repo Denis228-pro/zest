@@ -14,5 +14,6 @@ export interface BannerData {
   text: string;
   cta: string;
   cls: string;
+  active?: boolean;
   action: BannerAction;
 }

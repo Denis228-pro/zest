@@ -2,11 +2,12 @@ export interface Promo {
   code: string;
   type: 'percent' | 'fixed';
   value: number;
+  description: string;
   minSubtotal?: number;
   clubOnly?: boolean;
   firstOrderOnly?: boolean;
   needsUnlock?: boolean;
-  description: string;
+  active?: boolean;
 }
 
 export const PROMOS: Promo[] = [];

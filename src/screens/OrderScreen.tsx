@@ -9,7 +9,7 @@ import { Button, Empty, SectionTitle, Stars } from '../components/ui';
 import { Icon } from '../components/icons';
 import { CanVisual } from '../components/CanVisual';
 import { config } from '../config';
-import { submitCancel, submitReview } from '../api/client';
+import { crmEnabled, cancelOrderCRM, postReviewCRM } from '../api/crm';
 
 export function OrderScreen({ id }: { id: string }) {
   const { state, dispatch, isClub, productById } = useStore();
@@ -45,13 +45,12 @@ export function OrderScreen({ id }: { id: string }) {
   const rate = (v: number) => {
     dispatch({ type: 'RATE_ORDER', orderId: order.id });
     toast(`Спасибо! +50 бонусов за отзыв (${v}/5)`);
-    if (config.API_BASE_URL) {
-      submitReview(config.API_BASE_URL, {
+    if (crmEnabled()) {
+      postReviewCRM({
         orderId: order.id,
         rating: v,
         text: reviewText.trim(),
         name: state.customName.trim() || state.user?.name || '',
-        device: state.deviceId,
       }).catch(() => {});
     }
   };
@@ -66,9 +65,7 @@ export function OrderScreen({ id }: { id: string }) {
 
   const cancelOrder = () => {
     dispatch({ type: 'CANCEL_ORDER', id: order.id });
-    if (config.API_BASE_URL) {
-      submitCancel(config.API_BASE_URL, order.id, state.deviceId).catch(() => {});
-    }
+    if (crmEnabled()) cancelOrderCRM(order.id).catch(() => {});
     toast('Заказ отменён, бонусы возвращены');
   };
 

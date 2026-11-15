@@ -1,13 +1,11 @@
-import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
+import { createContext, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
 import type { Dispatch, ReactNode } from 'react';
 import type { Product } from '../data/products';
 import { DELIVERY_PRICE, FREE_FROM } from '../data/promos';
 import type { Promo } from '../data/promos';
 import type { BannerData } from '../data/banners';
 import { effPrice } from '../utils/format';
-import { config } from '../config';
-import { fetchCatalog } from '../api/client';
-import { useCallback } from 'react';
+import { crmEnabled, fetchCrmCatalog } from '../api/crm';
 import { getUser, vkInit, storageGet, storageSet, subscribeTheme, taptic } from '../bridge/vkApi';
 import { useToast } from './ToastContext';
 
@@ -474,11 +472,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   stateRef.current = state;
 
   const liveSync = useCallback(async () => {
-    if (!config.API_BASE_URL) return;
+    if (!crmEnabled()) return;
     try {
-      const data = await fetchCatalog(config.API_BASE_URL);
-      if (data.products.length) {
-        dispatch({ type: 'SET_CATALOG', products: data.products, promos: data.promos, banners: data.banners });
+      const data = await fetchCrmCatalog();
+      if (data.products.length || data.promos.length || data.banners.length) {
+        dispatch({
+          type: 'SET_CATALOG',
+          products: data.products,
+          promos: data.promos,
+          banners: data.banners,
+        });
       }
       data.statuses.forEach(s => {
         const o = stateRef.current.orders.find(x => String(x.id) === String(s.id));
@@ -490,9 +493,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!config.API_BASE_URL) return;
+    if (!crmEnabled()) return;
     liveSync();
-    const t = window.setInterval(liveSync, 20000);
+    const t = window.setInterval(liveSync, 15000);
     const onVis = () => {
       if (document.visibilityState === 'visible') liveSync();
     };

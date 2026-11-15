@@ -28,6 +28,8 @@ export interface Product {
   badge?: 'NEW' | 'HIT';
   limited?: boolean;
   rating: number;
+  active?: boolean;
+  sort?: number;
   photo?: string;
   can: CanTheme;
 }

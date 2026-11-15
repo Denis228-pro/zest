@@ -5,11 +5,11 @@ import { useToast } from '../context/ToastContext';
 import { SLOTS } from '../data/promos';
 import { effPrice, fmtMoney } from '../utils/format';
 import { getGeodata, getPhone, pay, taptic } from '../bridge/vkApi';
-import { submitOrder } from '../api/client';
-import { config } from '../config';
+import { crmEnabled, placeOrderCRM } from '../api/crm';
 import { StackScreen } from '../components/StackScreen';
 import { Button, Chip, Sheet, Spinner, Switch } from '../components/ui';
 import { Icon } from '../components/icons';
+import type { Order } from '../context/StoreContext';
 import type { IconName } from '../components/icons';
 
 const PAY_OPTIONS: { id: string; icon: IconName; title: string; sub: string }[] = [
@@ -145,18 +145,9 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
     dispatch({ type: 'PLACE_ORDER', draft });
     taptic('success');
     setBusy(false);
-    if (config.API_BASE_URL) {
-      submitOrder(config.API_BASE_URL, {
-        orderId,
-        customer: state.user?.name ?? state.customName ?? 'гость',
-        phone,
-        address: addressFull,
-        slot,
-        itemsText: lines.map(x => `${x.product.name} ×${x.line.qty}`).join('; '),
-        total,
-        payment: paymentLabel,
-        device: state.deviceId || '',
-      }).catch(() => {});
+    if (crmEnabled()) {
+      const serverOrder: Order = { ...draft, id: orderId, status: 'accepted', rated: false, createdAt: Date.now() };
+      placeOrderCRM(serverOrder).catch(() => toast('CRM: не удалось сохранить заказ'));
     }
     router.replace('success', { id: orderId });
   };
