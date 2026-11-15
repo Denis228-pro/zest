@@ -13,6 +13,8 @@ const STATUS_MAP = {
 };
 
 function doGet(e) {
+  const action = (e && e.parameter && e.parameter.action) || '';
+  if (action === 'orders') return json({ orders: readOrdersFull() });
   const payload = {
     products: readSheet('Товары'),
     promos: readSheet('Промокоды'),
@@ -30,9 +32,46 @@ function doPost(e) {
     body = {};
   }
   if (body.action === 'order') return handleOrder(body.order);
+  if (body.action === 'status') return handleStatus(String(body.orderId || ''), String(body.status || ''));
   if (body.action === 'cancel') return handleCancel(String(body.orderId || ''), String(body.device || ''));
   if (body.action === 'review') return handleReview(body.review || {});
   return json({ result: 'ignored' });
+}
+
+function handleStatus(orderId, status) {
+  const sheet = getSheet('Заказы');
+  if (!sheet || sheet.getLastRow() < 2) return json({ result: 'not found' });
+  const rows = sheet.getDataRange().getDisplayValues();
+  const head = rows[0];
+  const idI = head.indexOf('id');
+  const stI = head.indexOf('статус');
+  if (idI < 0 || stI < 0) return json({ result: 'error' });
+  for (let i = rows.length - 1; i >= 1; i--) {
+    if (String(rows[i][idI]) === String(orderId)) {
+      sheet.getRange(i + 1, stI + 1).setValue(status);
+      return json({ result: 'updated' });
+    }
+  }
+  return json({ result: 'not found' });
+}
+
+function readOrdersFull() {
+  const sheet = getSheet('Заказы');
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  const rows = sheet.getDataRange().getDisplayValues();
+  const head = rows[0];
+  return rows
+    .slice(1)
+    .filter(function (r) {
+      return r[0];
+    })
+    .map(function (r) {
+      const obj = {};
+      head.forEach(function (h, i) {
+        obj[String(h).trim()] = r[i];
+      });
+      return obj;
+    });
 }
 
 function getSheet(name) {
