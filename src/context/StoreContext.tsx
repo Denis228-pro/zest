@@ -11,7 +11,7 @@ import { useCallback } from 'react';
 import { getUser, vkInit, storageGet, storageSet, subscribeTheme, taptic } from '../bridge/vkApi';
 import { useToast } from './ToastContext';
 
-export type OrderStatus = 'accepted' | 'assembling' | 'transit' | 'delivered';
+export type OrderStatus = 'accepted' | 'assembling' | 'transit' | 'delivered' | 'cancelled';
 
 export const STATUS_FLOW: OrderStatus[] = ['accepted', 'assembling', 'transit', 'delivered'];
 
@@ -20,6 +20,7 @@ export const STATUS_META: Record<OrderStatus, { title: string; desc: string }> =
   assembling: { title: 'Собираем', desc: 'Склад собирает ваш заказ' },
   transit: { title: 'Курьер в пути', desc: 'Курьер мчится к вам' },
   delivered: { title: 'Доставлен', desc: 'Приятного заряда' },
+  cancelled: { title: 'Отменён', desc: 'Заказ был отменён' },
 };
 
 export interface CartLine {
@@ -106,6 +107,7 @@ export interface AppState {
   unlockedPromos: string[];
   invited: boolean;
   storyDone: boolean;
+  ageConfirmed: boolean;
   catalogPreset: CatalogPreset | null;
 }
 
@@ -150,6 +152,8 @@ export type Action =
   | { type: 'READ_ALL' }
   | { type: 'SET_DEVICE_ID'; id: string }
   | { type: 'SET_ORDER_STATUS'; id: number; status: OrderStatus }
+  | { type: 'CANCEL_ORDER'; id: number }
+  | { type: 'AGE_CONFIRM' }
   | { type: 'RESET' };
 
 const STORAGE_KEY = 'zest_state_v1';
@@ -179,6 +183,7 @@ const initialState: AppState = {
   unlockedPromos: [],
   invited: false,
   storyDone: false,
+  ageConfirmed: false,
   catalogPreset: null,
 };
 
@@ -365,6 +370,30 @@ function reducer(state: AppState, action: Action): AppState {
       if (action.status === 'delivered' && o.bonusEarned > 0) {
         bonusBalance = state.bonusBalance + o.bonusEarned;
         bonusLog = [...bonusLog, { t, amount: o.bonusEarned, reason: `Кэшбэк: заказ #${o.id}` } as BonusEntry];
+      }
+      return {
+        ...state,
+        orders: state.orders.map(x => (x.id === o.id ? updated : x)),
+        bonusBalance,
+        bonusLog: bonusLog.slice(-100),
+      };
+    }
+    case 'AGE_CONFIRM':
+      return state.ageConfirmed ? state : { ...state, ageConfirmed: true };
+    case 'CANCEL_ORDER': {
+      const o = state.orders.find(x => x.id === action.id);
+      if (!o || o.status !== 'accepted') return state;
+      const t = Date.now();
+      const updated: Order = {
+        ...o,
+        status: 'cancelled',
+        statusAt: { ...o.statusAt, cancelled: t },
+      };
+      let bonusBalance = state.bonusBalance;
+      let bonusLog = state.bonusLog;
+      if (o.bonusUsed > 0) {
+        bonusBalance = state.bonusBalance + o.bonusUsed;
+        bonusLog = [...bonusLog, { t, amount: o.bonusUsed, reason: `Возврат бонусов: отмена #${o.id}` } as BonusEntry];
       }
       return {
         ...state,

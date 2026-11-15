@@ -30,7 +30,87 @@ function doPost(e) {
     body = {};
   }
   if (body.action === 'order') return handleOrder(body.order);
+  if (body.action === 'cancel') return handleCancel(String(body.orderId || ''), String(body.device || ''));
+  if (body.action === 'review') return handleReview(body.review || {});
   return json({ result: 'ignored' });
+}
+
+function getSheet(name) {
+  return SpreadsheetApp.openById(SHEET_ID).getSheetByName(name);
+}
+
+function handleOrder(order) {
+  const sheet = getSheet('Заказы');
+  if (!sheet) return json({ result: 'error: no sheet' });
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['время', 'id', 'клиент', 'телефон', 'адрес', 'слот', 'состав', 'сумма', 'оплата', 'статус', 'device']);
+  }
+  sheet.appendRow([
+    new Date(),
+    order.orderId || '',
+    order.customer || '',
+    order.phone || '',
+    order.address || '',
+    order.slot || '',
+    order.itemsText || '',
+    order.total || 0,
+    order.payment || '',
+    'новый',
+    order.device || '',
+  ]);
+  notifyVK('Новый заказ #' + order.orderId + ' на ' + order.total + ' ₽ от ' + order.customer);
+  return json({ result: 'saved' });
+}
+
+function handleCancel(orderId, device) {
+  const sheet = getSheet('Заказы');
+  if (!sheet || sheet.getLastRow() < 2) return json({ result: 'not found' });
+  const rows = sheet.getDataRange().getDisplayValues();
+  const head = rows[0];
+  const idI = head.indexOf('id');
+  const stI = head.indexOf('статус');
+  const devI = head.indexOf('device');
+  if (idI < 0 || stI < 0) return json({ result: 'error' });
+  for (let i = rows.length - 1; i >= 1; i--) {
+    const row = rows[i];
+    if (row[idI] === orderId && (!device || devI < 0 || row[devI] === device)) {
+      sheet.getRange(i + 1, stI + 1).setValue('отменён');
+      return json({ result: 'cancelled' });
+    }
+  }
+  return json({ result: 'not found' });
+}
+
+function handleReview(review) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  let sheet = ss.getSheetByName('Отзывы');
+  if (!sheet) {
+    sheet = ss.insertSheet('Отзывы');
+    sheet.appendRow(['время', 'заказ', 'оценка', 'отзыв', 'имя']);
+  }
+  sheet.appendRow([
+    new Date(),
+    review.orderId || '',
+    review.rating || '',
+    review.text || '',
+    review.name || '',
+  ]);
+  return json({ result: 'saved' });
+}
+
+function notifyVK(text) {
+  if (!VK_ACCESS_TOKEN || !VK_PEER_ID) return;
+  UrlFetchApp.fetch('https://api.vk.com/method/messages.send', {
+    method: 'post',
+    payload: {
+      access_token: VK_ACCESS_TOKEN,
+      peer_id: VK_PEER_ID,
+      message: text,
+      v: '5.199',
+      random_id: Date.now(),
+    },
+    muteHttpExceptions: true,
+  });
 }
 
 function readStatuses() {
@@ -51,63 +131,8 @@ function readStatuses() {
     });
 }
 
-function getSheet(name) {
-  return SpreadsheetApp.openById(SHEET_ID).getSheetByName(name);
-}
-
-function doPost(e) {
-  let body = {};
-  try {
-    body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
-  } catch (err) {
-    body = {};
-  }
-  if (body.action === 'order') return handleOrder(body.order);
-  return json({ result: 'ignored' });
-}
-
-function handleOrder(order) {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  let sheet = ss.getSheetByName('Заказы');
-  if (!sheet) sheet = ss.insertSheet('Заказы');
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(['время', 'id', 'клиент', 'телефон', 'адрес', 'слот', 'состав', 'сумма', 'оплата', 'статус', 'device']);
-  }
-  sheet.appendRow([
-    new Date(),
-    order.orderId || '',
-    order.customer || '',
-    order.phone || '',
-    order.address || '',
-    order.slot || '',
-    order.itemsText || '',
-    order.total || 0,
-    order.payment || '',
-    'новый',
-    order.device || '',
-  ]);
-  notifyVK('Новый заказ №' + order.orderId + ' на ' + order.total + ' ₽ от ' + order.customer);
-  return json({ result: 'saved' });
-}
-
-function notifyVK(text) {
-  if (!VK_ACCESS_TOKEN || !VK_PEER_ID) return;
-  UrlFetchApp.fetch('https://api.vk.com/method/messages.send', {
-    method: 'post',
-    payload: {
-      access_token: VK_ACCESS_TOKEN,
-      peer_id: VK_PEER_ID,
-      message: text,
-      v: '5.199',
-      random_id: Date.now(),
-    },
-    muteHttpExceptions: true,
-  });
-}
-
 function readSheet(name) {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName(name);
+  const sheet = getSheet(name);
   if (!sheet || sheet.getLastRow() < 2) return [];
   const rows = sheet.getDataRange().getDisplayValues();
   const head = rows[0];

@@ -49,6 +49,7 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
   const [newValue, setNewValue] = useState('');
   const [busy, setBusy] = useState(false);
   const [payment, setPayment] = useState('vkpay');
+  const [ageOk, setAgeOk] = useState(false);
 
   const address = state.addresses.find(a => a.id === addressId) ?? state.addresses[0];
 
@@ -102,13 +103,8 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
 
   const submit = async () => {
     if (busy) return;
-    if (!address) {
-      toast('Добавьте адрес доставки');
-      setAddSheet(true);
-      return;
-    }
-    if (!phone.trim()) {
-      toast('Укажите телефон для курьера');
+    if (!ageOk) {
+      toast('Подтвердите, что вам исполнилось 18 лет');
       return;
     }
     const paymentLabel =
@@ -290,6 +286,14 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
           <span>К оплате</span>
           <span>{fmtMoney(total)}</span>
         </div>
+      </div>
+
+      <div className="settings-row" style={{ marginTop: 12, padding: '12px 14px', background: 'var(--surface)', borderRadius: 16 }}>
+        <Icon name="check" size={18} />
+        <span className="grow" style={{ fontWeight: 600, fontSize: 13 }}>
+          Мне исполнилось 18 лет
+        </span>
+        <Switch checked={ageOk} onChange={setAgeOk} />
       </div>
 
       <div style={{ marginTop: 14 }}>

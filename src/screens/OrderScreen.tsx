@@ -8,6 +8,8 @@ import { OrderTimeline } from '../components/OrderTimeline';
 import { Button, Empty, SectionTitle, Stars } from '../components/ui';
 import { Icon } from '../components/icons';
 import { CanVisual } from '../components/CanVisual';
+import { config } from '../config';
+import { submitCancel, submitReview } from '../api/client';
 
 export function OrderScreen({ id }: { id: string }) {
   const { state, dispatch, isClub, productById } = useStore();
@@ -30,6 +32,9 @@ export function OrderScreen({ id }: { id: string }) {
     );
   }
 
+  const [stars, setStars] = useState(0);
+  const [reviewText, setReviewText] = useState('');
+
   const repeat = () => {
     const lines = order.items.filter(l => productById(l.productId));
     dispatch({ type: 'ADD_LINES', lines });
@@ -40,6 +45,31 @@ export function OrderScreen({ id }: { id: string }) {
   const rate = (v: number) => {
     dispatch({ type: 'RATE_ORDER', orderId: order.id });
     toast(`Спасибо! +50 бонусов за отзыв (${v}/5)`);
+    if (config.API_BASE_URL) {
+      submitReview(config.API_BASE_URL, {
+        orderId: order.id,
+        rating: v,
+        text: reviewText.trim(),
+        name: state.customName.trim() || state.user?.name || '',
+        device: state.deviceId,
+      }).catch(() => {});
+    }
+  };
+
+  const sendReview = () => {
+    if (stars === 0) {
+      toast('Поставьте звёзды от 1 до 5');
+      return;
+    }
+    rate(stars);
+  };
+
+  const cancelOrder = () => {
+    dispatch({ type: 'CANCEL_ORDER', id: order.id });
+    if (config.API_BASE_URL) {
+      submitCancel(config.API_BASE_URL, order.id, state.deviceId).catch(() => {});
+    }
+    toast('Заказ отменён, бонусы возвращены');
   };
 
   const count = order.items.reduce((s, l) => s + l.qty, 0);
@@ -62,6 +92,14 @@ export function OrderScreen({ id }: { id: string }) {
 
       <OrderTimeline order={order} />
 
+      {order.status === 'accepted' ? (
+        <div style={{ marginTop: 10 }}>
+          <Button variant="ghost" block onClick={cancelOrder}>
+            Отменить заказ
+          </Button>
+        </div>
+      ) : null}
+
       {order.status === 'transit' ? (
         <div style={{ marginTop: 10 }}>
           <Button variant="ghost" block onClick={() => toast('Чат с курьером откроется в сообществе VK')}>
@@ -74,8 +112,18 @@ export function OrderScreen({ id }: { id: string }) {
         <div className="card" style={{ marginTop: 12, textAlign: 'center' }}>
           <div style={{ fontWeight: 800 }}>Оцените заказ — +50 бонусов</div>
           <div style={{ marginTop: 10, display: 'flex', justifyContent: 'center' }}>
-            <Stars value={0} size={30} onChange={rate} />
+            <Stars value={stars} size={30} onChange={setStars} />
           </div>
+          <textarea
+            className="input"
+            style={{ marginTop: 12, minHeight: 70, paddingTop: 10, paddingBottom: 10, textAlign: 'left', width: '100%', resize: 'none' }}
+            placeholder="Пара слов о заказе (необязательно)"
+            value={reviewText}
+            onChange={e => setReviewText(e.target.value)}
+          />
+          <Button block small onClick={sendReview}>
+            Отправить отзыв
+          </Button>
         </div>
       ) : null}
       {order.rated ? (

@@ -160,13 +160,73 @@ export async function storageGet(key: string): Promise<string | null> {
   if (isVKEnv()) {
     try {
       const meta = await send('VKWebAppStorageGet', { key });
-      const cnt = Number(meta?.keys?.[key] ?? 0);
+      const arr = meta?.keys;
+      if (Array.isArray(arr)) {
+        const found = arr.find((k: any) => k && k.key === key);
+        if (found && typeof found.value === 'string' && found.value !== '') return found.value;
+      }
+    } catch {}
+    try {
+      const cntMeta = await send('VKWebAppStorageGet', { key: `${key}#count` });
+      const cntArr = cntMeta?.keys;
+      const cntStr = Array.isArray(cntArr) ? cntArr.find((k: any) => k && k.key === `${key}#count`)?.value : null;
+      const cnt = Number(cntStr);
       if (cnt > 0) {
         let out = '';
+        let ok = true;
         for (let i = 0; i < cnt; i++) {
-          const part = await send('VKWebAppStorageGet', { key: `${key}#${i}` });
-          out += part?.keys?.[`${key}#${i}`] ?? '';
+          const part = await vsGetPart(`${key}#${i}`);
+          if (part === null) {
+            ok = false;
+            break;
+          }
+          out += part;
         }
+        if (ok) return out;
+      }
+    } catch {}
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+async function vsGetPart(key: string): Promise<string | null> {
+  const res = await send('VKWebAppStorageGet', { key });
+  const arr = res?.keys;
+  if (Array.isArray(arr)) {
+    const found = arr.find((k: any) => k && k.key === key);
+    if (found && typeof found.value === 'string') return found.value;
+  }
+  return null;
+}
+
+export async function storageSet(key: string, value: string): Promise<void> {
+  try {
+    localStorage.setItem(key, value);
+  } catch {}
+  if (!isVKEnv()) return;
+  const chunks = Math.max(1, Math.ceil(value.length / 1800));
+  try {
+    await vsSetPart(key, String(chunks));
+  } catch {}
+  for (let i = 0; i < chunks; i++) {
+    try {
+      await vsSetPart(`${key}#${i}`, value.slice(i * 1800, (i + 1) * 1800));
+    } catch {}
+  }
+}
+
+async function vsSetPart(key: string, value: string): Promise<void> {
+  await send('VKWebAppStorageSet', { key, value });
+}
         if (out) return out;
       }
     } catch {}
