@@ -146,7 +146,7 @@ export async function fetchCrmCatalog(): Promise<CrmCatalog> {
     id: String(v?.id ?? ''),
     status: (STATUS_OK.includes(v?.status) ? v.status : 'accepted') as OrderStatus,
   }));
-  return { products, promos, banners, statuses };
+  return { products, promos: promoArr, banners: bannerArr, statuses };
 }
 
 export async function placeOrderCRM(order: Order): Promise<void> {

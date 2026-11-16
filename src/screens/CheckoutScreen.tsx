@@ -146,7 +146,16 @@ export function CheckoutScreen({ params }: { params?: Record<string, any> }) {
     taptic('success');
     setBusy(false);
     if (crmEnabled()) {
-      const serverOrder: Order = { ...draft, id: orderId, status: 'accepted', rated: false, createdAt: Date.now() };
+      const serverOrder: Order = {
+        ...draft,
+        items: draft.lines,
+        id: orderId,
+        bonusEarned: Math.round(total * (isClub ? 0.1 : 0.05)),
+        status: 'accepted',
+        rated: false,
+        createdAt: Date.now(),
+        statusAt: { accepted: Date.now() },
+      };
       placeOrderCRM(serverOrder).catch(() => toast('CRM: не удалось сохранить заказ'));
     }
     router.replace('success', { id: orderId });
