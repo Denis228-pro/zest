@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ZeSt CRM</title>
+<style>
+  :root { --red:#ff6a00; --red2:#ff8f3e; --bg:#0f0f13; --card:#1b1b21; --line:rgba(255,255,255,.1); --txt:#f2f2f6; --mut:#8e8e99; --ok:#2fbf71; --warn:#ffc728; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--txt); font-family:'Segoe UI',system-ui,sans-serif; padding:14px; padding-bottom:60px; }
+  h1 { font-size:20px; margin:4px 0 0; }
+  .sub { color:var(--mut); font-size:12px; margin-bottom:12px; }
+  .top { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .tabs { display:flex; gap:6px; margin:14px 0; flex-wrap:wrap; }
+  .tabs button { background:var(--card); color:var(--mut); border:1px solid var(--line); padding:8px 14px; border-radius:10px; font-weight:700; font-size:13px; }
+  .tabs button.on { background:var(--red); color:#fff; border-color:var(--red); }
+  .card { background:var(--card); border-radius:14px; padding:12px; margin-top:10px; }
+  .card b { font-size:14px; }
+  .row { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:6px; }
+  .meta { color:var(--mut); font-size:12px; margin-top:4px; line-height:1.5; }
+  .pill { font-size:11px; font-weight:800; padding:4px 10px; border-radius:8px; white-space:nowrap; }
+  .p-accepted { background:#ffc72833; color:#ffc728; }
+  .p-assembling { background:#ff6a0033; color:#ff8f3e; }
+  .p-transit { background:#7c2ae844; color:#c9b4ff; }
+  .p-delivered { background:#2fbf7133; color:#2fbf71; }
+  .p-cancelled { background:#ffffff14; color:#8e8e99; }
+  button, select, input, textarea { font-family:inherit; }
+  button { padding:10px 14px; border-radius:10px; border:0; background:var(--red); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; }
+  button:active { transform:scale(.97); }
+  button.ghost { background:transparent; border:1px solid var(--line); color:var(--txt); }
+  button.mini { padding:7px 10px; font-size:12px; flex:1; }
+  button.mini.done { background:var(--ok); }
+  button.mini.cancelb { background:#2a2a33; color:var(--mut); }
+  input, select, textarea { width:100%; padding:9px 11px; border-radius:10px; border:1px solid var(--line); background:#14141a; color:var(--txt); font-size:13.5px; margin-top:6px; }
+  textarea { min-height:56px; resize:vertical; }
+  label { display:block; font-size:11.5px; color:var(--mut); margin-top:8px; }
+  .f2 { display:grid; grid-template-columns:1fr 1fr; gap:0 8px; }
+  .cb { display:flex; align-items:center; gap:8px; margin-top:8px; font-size:13px; }
+  .cb input { width:auto; margin:0; }
+  .stats { display:flex; gap:8px; margin-bottom:4px; }
+  .stat { flex:1; background:var(--card); border-radius:12px; padding:10px; text-align:center; }
+  .stat b { display:block; font-size:17px; color:var(--red2); }
+  .stat span { font-size:11px; color:var(--mut); }
+  .form { background:var(--card); border-radius:14px; padding:14px; margin-top:10px; }
+  .form h3 { font-size:15px; margin-bottom:4px; }
+  .hidden { display:none; }
+  .empty { text-align:center; color:var(--mut); padding:30px 0; }
+  .gate { max-width:420px; margin:60px auto 0; background:var(--card); border-radius:16px; padding:20px; }
+  .gate h1 { text-align:center; }
+  .hint { color:var(--mut); font-size:11px; margin-top:14px; line-height:1.6; text-align:center; }
+  .topbtns { display:flex; gap:8px; }
+  .topbtns button { background:var(--card); color:var(--mut); border:1px solid var(--line); padding:7px 12px; font-size:12px; }
+</style>
+</head>
+<body>
+<div id="gate" class="gate">
+  <h1>ZeSt CRM</h1>
+  <div class="sub">Управление заказами, товарами и акциями</div>
+  <label>URL базы (Firebase Realtime Database)</label>
+  <input id="gUrl" placeholder="https://xxxxx-default-rtdb.firebaseio.com" />
+  <label>PIN-код (придумайте и запомните)</label>
+  <input id="gPin" placeholder="например 1477" />
+  <div style="margin-top:14px"><button style="width:100%" onclick="enter()">Войти</button></div>
+  <div class="hint">URL базы — из Firebase Console: Realtime Database → указан над данными.<br>Данные из Google Таблицы переносятся вручную (или не нужны — всё заново).</div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="top">
+    <div><h1>ZeSt CRM</h1><div class="sub">Нарьян-Мар · Искатели</div></div>
+    <div class="topbtns"><button onclick="load()">Обновить</button><button onclick="out()">Выйти</button></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="stToday">0</b><span>сегодня</span></div>
+    <div class="stat"><b id="stRev">0 ₽</b><span>выручка</span></div>
+    <div class="stat"><b id="stAll">0</b><span>всего</span></div>
+  </div>
+  <div class="tabs">
+    <button id="tb-orders" class="on" onclick="tab('orders')">Заказы</button>
+    <button id="tb-products" onclick="tab('products')">Товары</button>
+    <button id="tb-promos" onclick="tab('promos')">Промокоды</button>
+    <button id="tb-banners" onclick="tab('banners')">Баннеры</button>
+  </div>
+  <div id="tab-orders"></div>
+  <div id="tab-products" class="hidden"></div>
+  <div id="tab-promos" class="hidden"></div>
+  <div id="tab-banners" class="hidden"></div>
+</div>
+
+<script>
+const FLOW = ['accepted','assembling','transit','delivered'];
+const NAMES = { accepted:'Принят', assembling:'Собираем', transit:'В пути', delivered:'Доставлен', cancelled:'Отменён' };
+const CATS = { energy:'Энергетики', water:'Вода', lemonade:'Лимонады', tonic:'Тоники' };
+let DATA = { orders:{}, products:{}, promos:{}, banners:{} };
+let TAB = 'orders';
+let EDIT_PRODUCT = null;
+
+function S(k, v) { if (v === undefined) return localStorage.getItem('zc_' + k); localStorage.setItem('zc_' + k, v); }
+function U(p) { return S('url').replace(/\/+$/,'') + p + '.json'; }
+async function api(p, opts) { const r = await fetch(U(p), opts); if (!r.ok) throw new Error('HTTP ' + r.status); return r.status === 200 ? await r.json().catch(() => null) : null; }
+function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function num(v, d) { const n = parseFloat(String(v ?? '').replace(',','.')); return isNaN(n) ? (d ?? 0) : n; }
+
+function gateOk() { return S('url') && S('pin'); }
+function enter() {
+  const u = document.getElementById('gUrl').value.trim();
+  const p = document.getElementById('gPin').value.trim();
+  if (!u || !p) { alert('Заполните оба поля'); return; }
+  S('url', u); S('pin', p);
+  show(); load();
+}
+function out() { if (confirm('Выйти из CRM?')) location.reload(); }
+function show() {
+  const ok = gateOk();
+  document.getElementById('gate').style.display = ok ? 'none' : 'block';
+  document.getElementById('app').style.display = ok ? 'block' : 'none';
+  if (ok) load();
+}
+function tab(t) {
+  TAB = t;
+  ['orders','products','promos','banners'].forEach(x => {
+    document.getElementById('tab-' + x).style.display = x === t ? 'block' : 'none';
+    document.getElementById('tb-' + x).classList.toggle('on', x === t);
+  });
+  if (t !== 'orders') load();
+}
+
+let EDITING = {};
+let PRODUCT_FORM_OPEN = false;
+document.addEventListener('focusin', e => {
+  const sec = e.target.closest('#tab-promos,#tab-banners');
+  if (sec) EDITING[sec.id.slice(4)] = true;
+});
+
+async function load() {
+  try {
+    DATA.orders = (await api('/orders')) || {};
+    DATA.products = (await api('/catalog/products')) || {};
+    DATA.promos = (await api('/catalog/promos')) || {};
+    DATA.banners = (await api('/catalog/banners')) || {};
+    renderOrders();
+    if (!EDITING.products && !PRODUCT_FORM_OPEN) renderProducts();
+    if (!EDITING.promos) renderPromos();
+    if (!EDITING.banners) renderBanners();
+  } catch (e) { alert('Ошибка загрузки: ' + e.message); }
+}
+
+const ICONS = {
+  bolt: '<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>',
+  percent: '<path d="M5 19 19 5"/><circle cx="7.5" cy="7.5" r="2.4"/><circle cx="16.5" cy="16.5" r="2.4"/>',
+  gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12"/>',
+  drop: '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+  citrus: '<circle cx="12" cy="13" r="6.5"/><path d="M12 6.5c.5-2.5 2.5-3.5 5-3"/>',
+  coffee: '<path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8z"/><path d="M17 9h2a2.5 2.5 0 0 1 0 5h-2"/>',
+};
+function iconSvg(name, color) {
+  return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ICONS.bolt}</svg>`;
+}
+
+function renderOrders() {
+  const box = document.getElementById('tab-orders');
+  const orders = Object.entries(DATA.orders).map(([key, o]) => ({ key, ...o }))
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  const today = new Date().toDateString();
+  const t = orders.filter(o => new Date(o.createdAt || 0).toDateString() === today);
+  const rev = t.reduce((s, o) => s + num(o.total), 0);
+  document.getElementById('stToday').textContent = t.length;
+  document.getElementById('stRev').textContent = Math.round(rev) + ' ₽';
+  document.getElementById('stAll').textContent = orders.length;
+  if (!orders.length) { box.innerHTML = '<div class="empty">Заказов пока нет</div>'; return; }
+  box.innerHTML = orders.map(o => {
+    let btns = '';
+    const idx = FLOW.indexOf(o.status);
+    if (idx >= 0 && idx < FLOW.length - 1) {
+      const next = FLOW[idx + 1];
+      btns += `<button class="mini ${next === 'delivered' ? 'done' : ''}" onclick="setStatus('${o.key}','${next}','${o.id}')">→ ${NAMES[next]}</button>`;
+    }
+    if (o.status !== 'delivered' && o.status !== 'cancelled') {
+      btns += `<button class="mini cancelb" onclick="setStatus('${o.key}','cancelled','${o.id}')">Отменён</button>`;
+    }
+    const items = Array.isArray(o.items) ? o.items.map(it => `${esc(it.name || it.productId)} ×${it.qty}`).join(', ') : esc(o.itemsText || '');
+    return `<div class="card">
+      <div class="row"><span class="meta">№ ${esc(o.id)} · ${esc(o.slot || '')}</span><span class="pill p-${o.status}">${NAMES[o.status] || esc(o.status)}</span></div>
+      <div class="meta">${esc(o.customer || '')} · ${esc(o.phone || '')}</div>
+      <div class="meta">${esc(o.address || '')}</div>
+      <div class="meta"><b>${num(o.total)} ₽</b> · ${esc(o.payment || '')}</div>
+      <div class="meta">${items || ''}</div>
+      <div class="btns">${btns}</div>
+    </div>`;
+  }).join('');
+}
+async function setStatus(key, status, id) {
+  await api('/orders/' + key, { method: 'PATCH', body: JSON.stringify({ status }) });
+  if (status === 'delivered' && DATA.orders[key]) {
+    const earned = num(DATA.orders[key].bonusEarned);
+    if (earned) await api('/bonuses/' + (DATA.orders[key].device || 'none') + '/' + key, { method: 'PUT', body: JSON.stringify({ amount: earned, reason: 'Кэшбэк: заказ #' + id }) });
+  }
+  load();
+}
+
+function renderProducts() {
+  if (PRODUCT_FORM_OPEN) return;
+  const box = document.getElementById('tab-products');
+  const items = Object.entries(DATA.products).map(([id, p]) => ({ key: id, ...p }))
+    .sort((a, b) => num(a.sort) - num(b.sort));
+  let html = `<div class="form hidden" id="pForm">
+    <h3 id="pFormTitle">Новый товар</h3>
+    <div class="f2">
+      <div><label>Код (id, латиницей)</label><input id="pId" placeholder="adrenaline-citrus" /></div>
+      <div><label>Название</label><input id="pName" placeholder="Adrenaline RUSH Citrus" /></div>
+    </div>
+    <div class="f2">
+      <div><label>Категория</label><select id="pCat"><option value="energy">Энергетики</option><option value="water">Вода</option><option value="lemonade">Лимонады</option><option value="tonic">Тоники</option></select></div>
+      <div><label>Цена, ₽</label><input id="pPrice" placeholder="169" /></div>
+    </div>
+    <div class="f2">
+      <div><label>Объём, л</label><input id="pVol" placeholder="0,45" /></div>
+      <div><label>Вкусы (через |)</label><input id="pFlav" placeholder="цитрус|мята" /></div>
+    </div>
+    <label>Ссылка на фото (.jpg/.png)</label><input id="pPhoto" placeholder="https://sun9-12.userapi.com/..." />
+    <div class="f2">
+      <div><label>Бренд</label><input id="pBrand" placeholder="Adrenaline" /></div>
+      <div><label>Бейдж</label><select id="pBadge"><option value="">—</option><option value="NEW">NEW</option><option value="HIT">ХИТ</option></select></div>
+    </div>
+    <div class="f2">
+      <div><label>Кофеин/100мл</label><input id="pCaf" placeholder="30" /></div>
+      <div><label>Ккал/100мл</label><input id="pKcal" placeholder="45" /></div>
+    </div>
+    <div class="f2">
+      <div><label>Углеводы/100мл</label><input id="pCarbs" placeholder="11" /></div>
+      <div><label>Порядок</label><input id="pSort" placeholder="1" /></div>
+    </div>
+    <label>Состав</label><input id="pComp" placeholder="Таурин, кофеин, витамины..." />
+    <label>Описание</label><textarea id="pDesc" placeholder="Пара строк для карточки"></textarea>
+    <div class="f2">
+      <div><label>Цвет банки</label><input id="pBody" value="#FF8A2B" /></div>
+      <div><label>Цвет этикетки</label><input id="pLabel" value="#FFFFFF" /></div>
+    </div>
+    <div class="f2">
+      <div><label>Цвет буквы</label><input id="pAccent" value="#F05A00" /></div>
+      <div><label>Буква на банке</label><input id="pBig" value="Z" /></div>
+    </div>
+    <div class="cb"><input type="checkbox" id="pLimited" /><span>Только для ZeSt Club</span></div>
+    <div class="cb"><input type="checkbox" id="pActive" checked /><span>В продаже</span></div>
+    <div class="btns"><button style="flex:1" onclick="saveProduct()">Сохранить товар</button><button class="ghost" onclick="closeProductForm()">Отмена</button></div>
+  </div>
+  <button class="mini" style="margin-bottom:6px" onclick="editProduct('')">+ Добавить товар</button>`;
+  html += items.map(p => `<div class="card">
+    <div class="row"><b>${esc(p.name)}</b><span class="pill ${p.limited ? 'p-transit' : 'p-accepted'}">${p.limited ? 'CLUB' : num(p.active) ? 'в продаже' : 'скрыт'}</span></div>
+    <div class="meta">${CATS[p.category] || esc(p.category)} · ${num(p.volume)} л · ${num(p.price)} ₽ · рейтинг ${num(p.rating)}</div>
+    <div class="btns">
+      <button class="mini" onclick="editProduct('${esc(p.key)}')">Изменить</button>
+      <button class="mini ${num(p.active) ? '' : 'done'}" onclick="toggleProduct('${esc(p.key)}')">${num(p.active) ? 'Скрыть' : 'Вернуть'}</button>
+      <button class="mini cancelb" onclick="delProduct('${esc(p.key)}')">Удалить</button>
+    </div>
+  </div>`).join('');
+  box.innerHTML = html;
+}
+let PFORM = null;
+function editProduct(key) {
+  EDITING.products = true;
+  PRODUCT_FORM_OPEN = true;
+  const p = key ? DATA.products[key] : null;
+  document.getElementById('pForm').classList.remove('hidden');
+  document.getElementById('pFormTitle').textContent = key ? 'Изменить товар' : 'Новый товар';
+  document.getElementById('pName').value = p?.name || '';
+  document.getElementById('pCat').value = p?.category || 'energy';
+  document.getElementById('pPrice').value = p?.price ?? '';
+  document.getElementById('pVol').value = p?.volume ?? '0,45';
+  document.getElementById('pFlav').value = Array.isArray(p?.flavors) ? p.flavors.join('|') : (p?.flavors || '');
+  document.getElementById('pBrand').value = p?.brand || '';
+  document.getElementById('pBody').value = p?.canBody || '#FF8A2B';
+  document.getElementById('pLabel').value = p?.canLabel || '#FFFFFF';
+  document.getElementById('pAccent').value = p?.canAccent || '#F05A00';
+  document.getElementById('pBig').value = p?.canBig || 'Z';
+  document.getElementById('pSmall').value = p?.canSmall || 'ZeSt';
+  document.getElementById('pPhoto').value = p?.photo || '';
+  document.getElementById('pComp').value = p?.composition || '';
+  document.getElementById('pDesc').value = p?.description || '';
+  document.getElementById('pCaf').value = p?.caffeine ?? 0;
+  document.getElementById('pKcal').value = p?.kcal ?? 0;
+  document.getElementById('pCarbs').value = p?.carbs ?? 0;
+  document.getElementById('pSort').value = p?.sort ?? 0;
+  document.getElementById('pBadge').value = p?.badge || '';
+  document.getElementById('pLimited').checked = !!p?.limited;
+  document.getElementById('pActive').checked = p ? num(p.active) !== 0 : true;
+  document.getElementById('pForm').scrollIntoView({ behavior: 'smooth' });
+}
+async function saveProduct() {
+  const id = document.getElementById('pId').value.trim().toLowerCase().replace(/\s+/g, '-');
+  const name = document.getElementById('pName').value.trim();
+  if (!id || !name) { alert('Заполните id и название'); return; }
+  const product = {
+    id, name,
+    brand: document.getElementById('pBrand').value.trim(),
+    category: document.getElementById('pCat').value,
+    volume: num(document.getElementById('pVol').value, 0.45),
+    price: num(document.getElementById('pPrice').value),
+    flavors: document.getElementById('pFlav').value.split('|').map(s => s.trim()).filter(Boolean),
+    caffeine: num(document.getElementById('pCaf').value),
+    kcal: num(document.getElementById('pKcal').value),
+    protein: 0, fat: 0,
+    carbs: num(document.getElementById('pCarbs').value),
+    composition: document.getElementById('pComp').value,
+    description: document.getElementById('pDesc').value,
+    badge: document.getElementById('pBadge').value,
+    limited: document.getElementById('pLimited').checked,
+    rating: 4.7,
+    active: document.getElementById('pActive').checked,
+    sort: num(document.getElementById('pSort').value),
+    photo: document.getElementById('pPhoto').value.trim(),
+    canBody: document.getElementById('pBody').value,
+    canLabel: '#FFFFFF',
+    canAccent: '#F05A00',
+    canBig: (document.getElementById('pBrand').value.trim()[0] || 'Z').toUpperCase(),
+    canSmall: 'ZeSt',
+  };
+  await api('/catalog/products/' + id, { method: 'PUT', body: JSON.stringify(product) });
+  PRODUCT_FORM_OPEN = false;
+  EDITING.products = false;
+  document.getElementById('pForm').classList.add('hidden');
+  load();
+}
+function closeProductForm() {
+  PRODUCT_FORM_OPEN = false;
+  EDITING.products = false;
+  document.getElementById('pForm').classList.add('hidden');
+  renderProducts();
+}
+async function toggleProduct(key) {
+  const p = DATA.products[key];
+  await api('/catalog/products/' + key, { method: 'PATCH', body: JSON.stringify({ active: !num(p.active) }) });
+  load();
+}
+async function delProduct(key) {
+  if (!confirm('Удалить товар «' + (DATA.products[key]?.name || key) + '»?')) return;
+  await api('/catalog/products/' + key, { method: 'DELETE' });
+  load();
+}
+
+function renderPromos() {
+  const box = document.getElementById('tab-promos');
+  const items = Object.entries(DATA.promos).map(([code, p]) => ({ code, ...p }));
+  let html = `<div class="form">
+    <h3>Новый промокод</h3>
+    <div class="f2">
+      <div><label>Код</label><input id="prCode" placeholder="ZEST10" /></div>
+      <div><label>Тип</label><select id="prType"><option value="percent">percent</option><option value="fixed">fixed</option></select></div>
+    </div>
+    <label>Скидка (число)</label><input id="prValue" placeholder="10" />
+    <label>Описание</label><input id="prDesc" placeholder="Минус 10% на весь заказ" />
+    <div class="cb"><input type="checkbox" id="prClub" /><span>Только для ZeSt Club</span></div>
+    <div class="cb"><input type="checkbox" id="prFirst" /><span>Только для первого заказа</span></div>
+    <button style="margin-top:10px" onclick="savePromo()">Добавить промокод</button>
+  </div>`;
+  html += items.length ? items.map(p => `<div class="card">
+    <div class="row"><b>${esc(p.code)}</b><span class="pill p-accepted">${p.type === 'fixed' ? '−' + num(p.value) + ' ₽' : '−' + num(p.value) + '%'}</span></div>
+    <div class="meta">${esc(p.description || '')}</div>
+    <div class="btns"><button class="mini cancelb" onclick="togglePromo('${esc(p.code)}')">${p.active === false ? 'Включить' : 'Выключить'}</button><button class="mini cancelb" onclick="delPromo('${esc(p.code)}')">Удалить</button></div>
+  </div>`).join('') : '<div class="empty">Промокодов нет</div>';
+  box.innerHTML = html;
+}
+async function savePromo() {
+  const code = document.getElementById('prCode').value.trim().toUpperCase();
+  if (!code) { alert('Введите код'); return; }
+  await api('/catalog/promos/' + code, {
+    method: 'PUT',
+    body: JSON.stringify({
+      code,
+      type: document.getElementById('prType').value,
+      value: num(document.getElementById('prValue').value),
+      description: document.getElementById('prDesc').value,
+      clubOnly: false,
+      firstOrderOnly: false,
+      needsUnlock: false,
+      active: true,
+    }),
+  });
+  load();
+}
+async function togglePromo(code) {
+  const p = DATA.promos[code];
+  await api('/catalog/promos/' + code, { method: 'PATCH', body: JSON.stringify({ active: p.active === false }) });
+  load();
+}
+async function delPromo(code) {
+  if (!confirm('Удалить промокод ' + code + '?')) return;
+  await api('/catalog/promos/' + code, { method: 'DELETE' });
+  load();
+}
+
+function renderBanners() {
+  const box = document.getElementById('tab-banners');
+  const items = Object.entries(DATA.banners).map(([id, b]) => ({ id, ...b }));
+  let html = `<div class="form">
+    <h3>Новый баннер</h3>
+    <label>Код (b1, b2...)</label><input id="bnId" placeholder="b5" />
+    <div class="f2">
+      <div><label>Надпись сверху</label><input id="bnKicker" placeholder="Акция недели" /></div>
+      <div><label>Стиль</label><select id="bnCls"><option value="banner--red">Красный</option><option value="banner--dark">Тёмный</option><option value="banner--acid">Кислотный</option></select></div>
+    </div>
+    <label>Крупная надпись</label><input id="bnTitle" placeholder="2 ПО ЦЕНЕ 1" />
+    <label>Пояснение</label><input id="bnText" placeholder="На все лимонады до воскресенья" />
+    <label>Надпись на кнопке</label><input id="bnCta" placeholder="Забрать" />
+    <div class="f2">
+      <div><label>Куда ведёт</label><select id="bnAct"><option value="product">Товар</option><option value="catalog">Каталог</option><option value="club">ZeSt Club</option><option value="none">Никуда</option></select></div>
+      <div><label>ID товара / категория</label><input id="bnActId" placeholder="adrenaline-citrus" /></div>
+    </div>
+    <button style="margin-top:10px" onclick="saveBanner()">Добавить баннер</button>
+  </div>`;
+  html += items.length ? items.map(b => `<div class="card">
+    <div class="row"><b>${esc(b.title)}</b><span class="pill p-accepted">${esc(b.cls)}</span></div>
+    <div class="meta">${esc(b.kicker || '')} · ${esc(b.text || '')}</div>
+    <div class="meta">Кнопка: ${esc(b.cta || '')} · ${esc(b.actionType || 'none')} ${esc(b.actionId || '')}</div>
+    <div class="btns">
+      <button class="mini" onclick="toggleBanner('${esc(b.id)}')">${b.active === false ? 'Включить' : 'Скрыть'}</button>
+      <button class="mini cancelb" onclick="delBanner('${esc(b.id)}')">Удалить</button>
+    </div>
+  </div>`).join('') : '<div class="empty">Баннеров нет</div>';
+  box.innerHTML = html;
+}
+async function saveBanner() {
+  const id = document.getElementById('bnId').value.trim();
+  const title = document.getElementById('bnTitle').value.trim();
+  if (!id || !title) { alert('Заполните код и надпись'); return; }
+  await api('/catalog/banners/' + id, {
+    method: 'PUT',
+    body: JSON.stringify({
+      id, title,
+      kicker: document.getElementById('bnKicker').value.trim(),
+      text: document.getElementById('bnText').value.trim(),
+      cta: document.getElementById('bnCta').value.trim() || 'Открыть',
+      cls: document.getElementById('bnCls').value,
+      actionType: document.getElementById('bnAct').value,
+      actionId: document.getElementById('bnActId').value.trim() || null,
+      actionCategory: null, actionBadge: null, active: true,
+    }),
+  });
+  load();
+}
+async function toggleBanner(id) {
+  const b = DATA.banners[id];
+  await api('/catalog/banners/' + id, { method: 'PATCH', body: JSON.stringify({ active: b.active === false }) });
+  load();
+}
+async function delBanner(id) {
+  if (!confirm('Удалить баннер ' + id + '?')) return;
+  await api('/catalog/banners/' + id, { method: 'DELETE' });
+  load();
+}
+
+function tab(t) {
+  TAB = t;
+  ['orders','products','promos','banners'].forEach(x => {
+    document.getElementById('tab-' + x).style.display = x === t ? 'block' : 'none';
+    document.getElementById('tb-' + x).classList.toggle('on', x === t);
+  });
+  if (t !== 'orders') load();
+}
+
+if (gateOk()) { show(); load(); }
+setInterval(() => { if (gateOk() && document.visibilityState === 'visible') load(); }, 15000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && gateOk()) load(); });
+</script>
+</body>
+</html>
